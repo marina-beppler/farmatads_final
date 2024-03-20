@@ -9,19 +9,14 @@
         </ion-buttons>
       </ion-toolbar>
     </ion-header>
-    <ion-content>
+    <ion-content class="ion-padding">
       <ion-card id="background">
         <ion-card class="center">
-          <p>Informe seus dados abaixo para entrar na sua conta</p>
+          <p>Informe seu email abaixo para receber o código!</p>
           <ion-item id="input-email">
             <ion-input v-model="email" type="email" placeholder="Email:" required></ion-input>
           </ion-item>
-          <ion-item id="input-password">
-            <ion-input v-model="password" type="password" placeholder="Senha:" required></ion-input>
-          </ion-item>
-          <ion-button id="input-login-button" expand="block" @click="login">Login</ion-button>
-          <p id="text-fpassword">Clique no botão abaixo caso tenha esquecido sua senha:</p>
-          <ion-button id="input-fpassword-button" expand="block" @click="openForgotPasswordModal">Esqueci minha senha</ion-button>
+          <ion-button id="#receber-button" expand="block" @click="login">Receber código</ion-button>
         </ion-card>
       </ion-card>
     </ion-content>
@@ -36,7 +31,7 @@
   import router from '@/router';
   
   export default defineComponent({
-    name: 'Login',
+    name: 'forgotPassword',
     components: {
       IonModal,
       IonHeader,
@@ -53,26 +48,22 @@
       return {
       isModalOpen: true,
       email: '',
-      password: '',
       arrowBackOutline: arrowBackOutline
       };
     },
     methods: {
     dismissModal() {
-      router.push('/home');
+      router.push('/login');
       this.isModalOpen = false;
+
     },
     login() {
-      if (!this.email || !this.password) {
-        console.log('Login é necessário');
+      if (!this.email) {
+        console.log('Informe um email!');
         return;
       }
       //logica de login
-      console.log('Login com:', this.email, this.password);
-    },
-    openForgotPasswordModal() {
-      router.push('/forgotPassword');  
-      console.log('Abrir esquecer minha senha');
+      console.log('Email enviado!');
     }
   }
   });
@@ -130,41 +121,12 @@ ion-toolbar {
   margin: 15px;
 }
 
-#input-password{
-  position: absolute;
-  top: 35%;
-  left: 5%;
-  -ms-transform: translate(-35%, -35%);
-  transform: translate(-5%, -5%);
-  width: 90%;
-  margin: 15px;
-}
 
-#input-fpassword-button{
-  position: absolute;
-  top: 80%;
-  left: 5%;
-  -ms-transform: translate(-80%, -80%);
-  transform: translate(-5%, -5%);
-  width: 90%;
-  margin: 15px;
-}
-
-#input-login-button{
+#receber-button{
   position: absolute;
   top: 50%;
   left: 5%;
   -ms-transform: translate(-50%, -50%);
-  transform: translate(-5%, -5%);
-  width: 90%;
-  margin: 15px;
-}
-
-#text-fpassword{
-  position: absolute;
-  top: 70%;
-  left: 5%;
-  -ms-transform: translate(-70%, -70%);
   transform: translate(-5%, -5%);
   width: 90%;
   margin: 15px;

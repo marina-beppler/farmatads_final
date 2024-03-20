@@ -89,6 +89,7 @@ p{
   height: 100%;
   background-color:#E7F7F4;
 }
+
 #text-center-title{
   margin: 0;
   position: absolute;

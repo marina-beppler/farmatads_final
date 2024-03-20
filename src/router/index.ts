@@ -3,6 +3,7 @@ import { RouteRecordRaw } from 'vue-router';
 import HomePage from '../views/HomePage.vue';
 import Login  from '../views/Login.vue';
 import Cadastro from '../views/Cadastro.vue';
+import forgotPassword from '../views/forgotPasswordModal.vue';
 
 const routes: Array<RouteRecordRaw> = [
   {
@@ -23,6 +24,11 @@ const routes: Array<RouteRecordRaw> = [
     path: '/cadastro',
     name: 'Cadastro',
     component: Cadastro
+  },
+  {
+    path: '/forgotPassword',
+    name: 'forgotPassword',
+    component: forgotPassword
   }
 ]
 

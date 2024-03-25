@@ -38,10 +38,6 @@
   export default defineComponent({
     name: 'Login',
     components: {
-      IonModal,
-      IonHeader,
-      IonToolbar,
-      IonTitle,
       IonContent,
       IonButton,
       IonIcon

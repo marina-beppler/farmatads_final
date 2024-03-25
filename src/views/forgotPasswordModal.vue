@@ -16,7 +16,7 @@
           <ion-item id="input-email">
             <ion-input v-model="email" type="email" placeholder="Email:" required></ion-input>
           </ion-item>
-          <ion-button id="#receber-button" expand="block" @click="login">Receber código</ion-button>
+          <ion-button id="#receber-button" expand="block" @click="codigo">Receber código</ion-button>
         </ion-card>
       </ion-card>
     </ion-content>
@@ -57,13 +57,14 @@
       this.isModalOpen = false;
 
     },
-    login() {
+    codigo() {
       if (!this.email) {
         console.log('Informe um email!');
         return;
       }
       //logica de login
       console.log('Email enviado!');
+      router.push('/resetPassword');
     }
   }
   });

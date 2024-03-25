@@ -4,6 +4,7 @@ import HomePage from '../views/HomePage.vue';
 import Login  from '../views/Login.vue';
 import Cadastro from '../views/Cadastro.vue';
 import forgotPassword from '../views/forgotPasswordModal.vue';
+import ResetPassword from '../views/ResetPassword.vue';
 
 const routes: Array<RouteRecordRaw> = [
   {
@@ -29,6 +30,11 @@ const routes: Array<RouteRecordRaw> = [
     path: '/forgotPassword',
     name: 'forgotPassword',
     component: forgotPassword
+  },
+  {
+    path: '/resetPassword',
+    name: 'resetPassword',
+    component: ResetPassword
   }
 ]
 

@@ -1,6 +1,6 @@
 <script script lang="ts">
 import { defineComponent, ref } from 'vue';
-import { IonPage, IonButton, IonCard, IonContent, IonHeader, modalController, IonImg,onIonViewWillEnter } from '@ionic/vue';
+import { IonPage, IonButton, IonCard, IonContent, IonHeader, modalController, IonImg } from '@ionic/vue';
 import Login from "./Login.vue";
 import Cadastro from "./Cadastro.vue"
 

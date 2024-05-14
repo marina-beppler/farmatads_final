@@ -1,20 +1,24 @@
 <script lang="ts">
     import { defineComponent } from 'vue';
-    import { IonHeader, IonToolbar, IonContent, IonButton, IonButtons, IonIcon, IonCard } from '@ionic/vue';
+    import { IonHeader, IonToolbar, IonContent, IonButton, IonButtons, IonIcon, IonCard, IonItem, IonInput, IonPage } from '@ionic/vue';
     import { arrowBackOutline } from 'ionicons/icons';
     import { useRouter } from 'vue-router';
     import router from '@/router';
 
     export default defineComponent({
         name: 'ResetPassword',
-        components:{
+        components: {
         IonHeader,
         IonToolbar,
         IonContent,
         IonButton,
+        IonItem,
+        IonInput,
+        IonCard,
         IonButtons,
         IonIcon,
-        IonCard,
+        IonPage
+
         },
         setup(){
             const router = useRouter();
@@ -55,15 +59,15 @@
             <ion-card id="background">
                 <ion-card class="center">
                     <p id="text-one">Informe abaixo o código recebido no e-mail:</p>
-                    <ion-item id="input-codigo">
+                    <ion-item :clear-input="true" id="input-codigo">
                         <ion-input v-model="codigo" placeholder="Código:" required/>
                     </ion-item>
                     <p id="text-two">Crie uma nova senha no campo abaixo</p>
                     <ion-item id="input-senha">
-                        <ion-input v-model="senha" placeholder="Nova senha:" required/>
+                        <ion-input :clear-input="true" v-model="senha" placeholder="Nova senha:" required/>
                     </ion-item>
                     <ion-item id="input-newsenha">
-                        <ion-input v-model="newsenha" placeholder="Confirmar nova senha" required/>
+                        <ion-input :clear-input="true" v-model="newsenha" placeholder="Confirmar nova senha" required/>
                     </ion-item>
                     <ion-button size="large" id="salvar" expand="block" @click="savePassword"> Salvar</ion-button>
                     <a id="cancelar" href="/">Cancelar</a>

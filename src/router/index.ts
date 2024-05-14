@@ -3,8 +3,9 @@ import { RouteRecordRaw } from 'vue-router';
 import HomePage from '../views/HomePage.vue';
 import Login  from '../views/Login.vue';
 import Cadastro from '../views/Cadastro.vue';
-import forgotPassword from '../views/forgotPasswordModal.vue';
+import forgotPassword from '../views/forgotPassword.vue';
 import ResetPassword from '../views/ResetPassword.vue';
+import XaropeConfig from '../xarope/XaropeConfig.vue';
 
 const routes: Array<RouteRecordRaw> = [
   {
@@ -35,7 +36,12 @@ const routes: Array<RouteRecordRaw> = [
     path: '/resetPassword',
     name: 'resetPassword',
     component: ResetPassword
-  }
+  },
+  {
+    path: '/xaropeconfig',
+    name: 'XaropeConfig',
+    component: XaropeConfig
+  },
 ]
 
 const router = createRouter({

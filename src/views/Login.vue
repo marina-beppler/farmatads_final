@@ -1,5 +1,5 @@
 <template>
-  <ion-modal :is-open="isModalOpen" :showBackdrop="false">
+  <ion-page>
     <ion-header>
       <ion-toolbar>
         <ion-buttons slot="start">
@@ -25,38 +25,41 @@
         </ion-card>
       </ion-card>
     </ion-content>
-</ion-modal>
+  </ion-page>
 </template>
   
-  <script lang="ts">
-  import { defineComponent } from 'vue';
-  import { IonModal, IonHeader, IonToolbar, IonTitle, IonContent, IonButton, IonButtons, IonIcon } from '@ionic/vue';
-  import { arrowBackOutline } from 'ionicons/icons';
-  import { useRouter } from 'vue-router';
-  import router from '@/router';
+<script lang="ts">
+import { defineComponent } from 'vue';
+import { IonPage, IonHeader, IonToolbar, IonButton, IonIcon, IonContent, IonCard, IonItem, IonInput, IonButtons } from '@ionic/vue';
+import { arrowBackOutline } from 'ionicons/icons';
+import { useRouter } from 'vue-router';
+import router from '@/router';
   
-  export default defineComponent({
-    name: 'Login',
-    components: {
-      IonContent,
-      IonButton,
-      IonIcon
-    },
-    setup(){
-      const router = useRouter();
-    },
-    data() {
-      return {
-      isModalOpen: true,
+export default defineComponent({
+  name: 'Login',
+  components: {
+    IonPage,
+    IonHeader,
+    IonToolbar,
+    IonButton,
+    IonIcon,
+    IonContent,
+    IonCard,
+    IonItem,
+    IonInput,
+    IonButtons
+  },
+  setup(){
+    const router = useRouter();
+    return {
       email: '',
       password: '',
       arrowBackOutline: arrowBackOutline
-      };
-    },
-    methods: {
+    };
+  },
+  methods: {
     dismissModal() {
       router.push('/home');
-      this.isModalOpen = false;
     },
     login() {
       if (!this.email || !this.password) {
@@ -71,31 +74,32 @@
       console.log('Abrir esquecer minha senha');
     }
   }
-  });
-  </script>
-  <style scoped>
-       @import url(https://fonts.googleapis.com/css?family=Kufam);
+});
+</script>
 
-p{
+<style scoped>
+@import url(https://fonts.googleapis.com/css?family=Kufam);
+
+p {
   font-family: "Kufam";
   color: #034F67;
   font-size: medium;
 }
 
-#background{
+#background {
   height: 95%;
   background-color: #E5F0F7;
 }
 
-.center{
+.center {
   margin: auto;
   text-align: center;
   height: 100%;
-  background-color:#ffffff;
+  background-color: #ffffff;
   padding: 10px;
 }
 
-ion-button{
+ion-button {
   --background-activated: #bf9dda;
   --background: #C6ADD9;
   --color: black;
@@ -166,4 +170,4 @@ ion-toolbar {
   margin: 15px;
 }
 
-  </style>
+</style>

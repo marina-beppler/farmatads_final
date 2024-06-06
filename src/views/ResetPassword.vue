@@ -59,14 +59,14 @@
             <ion-card id="background">
                 <ion-card class="center">
                     <p id="text-one">Informe abaixo o código recebido no e-mail:</p>
-                    <ion-item :clear-input="true" id="input-codigo">
+                    <ion-item :clear-input="true" id="input-codigo" lines="none">
                         <ion-input v-model="codigo" placeholder="Código:" required/>
                     </ion-item>
                     <p id="text-two">Crie uma nova senha no campo abaixo</p>
-                    <ion-item id="input-senha">
+                    <ion-item id="input-senha" lines="none">
                         <ion-input :clear-input="true" v-model="senha" placeholder="Nova senha:" required/>
                     </ion-item>
-                    <ion-item id="input-newsenha">
+                    <ion-item id="input-newsenha" lines="none">
                         <ion-input :clear-input="true" v-model="newsenha" placeholder="Confirmar nova senha" required/>
                     </ion-item>
                     <ion-button size="large" id="salvar" expand="block" @click="savePassword"> Salvar</ion-button>

@@ -56,6 +56,7 @@ export default defineComponent({
   padding: 16px;
   background-color: #E7F7F4;
 }
+
 h1{
   color: #469FBC;
   font-family: 'Literata';

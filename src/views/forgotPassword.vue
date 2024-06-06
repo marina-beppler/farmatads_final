@@ -13,7 +13,7 @@
       <ion-card id="background">
         <ion-card class="center">
           <p>Informe seu email abaixo para receber o código!</p>
-          <ion-item>
+          <ion-item lines="none">
             <ion-input v-model="email" type="email" placeholder="Email:" required></ion-input>
           </ion-item>
           <ion-button expand="block" @click="codigo">Receber código</ion-button>

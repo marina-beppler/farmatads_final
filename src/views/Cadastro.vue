@@ -13,16 +13,16 @@
       <ion-card id="background">
         <ion-card class="center">
           <p>Informe seus dados abaixo para criar sua conta</p>
-          <ion-item id ="input-name">
+          <ion-item id ="input-name" lines="none">
             <ion-input v-model="name" placeholder="Nome:" required></ion-input>
           </ion-item>
-          <ion-item id ="input-email">
+          <ion-item id ="input-email" lines="none">
             <ion-input v-model="email" type="email" placeholder="Email:" required></ion-input>
           </ion-item>
-          <ion-item id ="input-password">
+          <ion-item id ="input-password" lines="none">
             <ion-input v-model="password" type="password" placeholder="Senha:" required></ion-input>
           </ion-item>
-          <ion-item id ="input-password-conf">
+          <ion-item id ="input-password-conf" lines="none">
             <ion-input v-model="passwordConf" type="password" placeholder="Confirme sua senha:" required></ion-input>
           </ion-item>
           <ion-button id="cadastro-button" expand="block" @click="cadastro">Criar Conta</ion-button>

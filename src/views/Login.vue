@@ -13,10 +13,10 @@
       <ion-card id="background">
         <ion-card class="center">
           <p>Informe seus dados abaixo para entrar na sua conta</p>
-          <ion-item id="input-email">
+          <ion-item id="input-email" lines="none">
             <ion-input v-model="email" type="email" placeholder="Email:" required></ion-input>
           </ion-item>
-          <ion-item id="input-password">
+          <ion-item id="input-password" lines="none">
             <ion-input v-model="password" type="password" placeholder="Senha:" required></ion-input>
           </ion-item>
           <ion-button id="input-login-button" expand="block" @click="login">Login</ion-button>

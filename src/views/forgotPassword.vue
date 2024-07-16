@@ -28,8 +28,7 @@ import { defineComponent } from 'vue';
 import { IonHeader, IonToolbar, IonButton, IonButtons, IonIcon, IonInput, IonItem, IonCard, IonPage, IonContent } from '@ionic/vue';
 import { arrowBackOutline } from 'ionicons/icons';
 import { useRouter } from 'vue-router';
-import router from '@/router';
-  
+
 export default defineComponent({
   name: 'forgotPassword',
   components: {
@@ -53,16 +52,23 @@ export default defineComponent({
   },
   methods: {
     dismissModal() {
-      router.push('/login');
+      this.$router.push('/login');
     },
     codigo() {
       if (!this.email) {
         console.log('Informe um email!');
         return;
       }
-      //logica de login
+      
+      const padrao = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+      if (!padrao.test(this.email)) {
+        console.log('E-mail inválido!');
+        return;
+      }
+
+      // Lógica de envio do código
       console.log('Email enviado!');
-      router.push('/resetPassword');
+      this.$router.push('/resetPassword');
     }
   }
 });

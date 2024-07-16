@@ -13,25 +13,25 @@
       <ion-card id="background">
         <ion-card class="center">
           <p>Informe seus dados abaixo para criar sua conta</p>
-          <ion-item id ="input-name" lines="none">
+          <ion-item id="input-name" lines="none">
             <ion-input v-model="name" placeholder="Nome:" required></ion-input>
           </ion-item>
-          <ion-item id ="input-email" lines="none">
+          <ion-item id="input-email" lines="none">
             <ion-input v-model="email" type="email" placeholder="Email:" required></ion-input>
           </ion-item>
-          <ion-item id ="input-password" lines="none">
+          <ion-item id="input-password" lines="none">
             <ion-input v-model="password" type="password" placeholder="Senha:" required></ion-input>
           </ion-item>
-          <ion-item id ="input-password-conf" lines="none">
+          <ion-item id="input-password-conf" lines="none">
             <ion-input v-model="passwordConf" type="password" placeholder="Confirme sua senha:" required></ion-input>
           </ion-item>
           <ion-button id="cadastro-button" expand="block" @click="cadastro">Criar Conta</ion-button>
+        </ion-card>
       </ion-card>
-    </ion-card>  
     </ion-content>
   </ion-page>
 </template>
-  
+
 <script lang="ts">
 import { defineComponent } from 'vue';
 import { IonPage, IonHeader, IonToolbar, IonButton, IonIcon, IonContent, IonCard, IonItem, IonInput, IonButtons } from '@ionic/vue';
@@ -53,7 +53,7 @@ export default defineComponent({
     IonInput,
     IonButtons
   },
-  setup(){
+  setup() {
     const router = useRouter();
     return {
       email: '',
@@ -71,13 +71,21 @@ export default defineComponent({
       if (!this.email || !this.password || !this.name || !this.passwordConf) {
         console.log('É necessário preencher todos os campos!');
         return;
-      } else{
-        //logica de login
-        console.log('Cadastro com:', this.email, this.password, this.name, this.passwordConf);
       }
-    },
-    openForgotPasswordModal() {
-      console.log('Abrir esquecer minha senha');
+
+      const padrao = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+      if (!padrao.test(this.email)) {
+        console.log('E-mail inválido!');
+        return;
+      }
+
+      if (this.password !== this.passwordConf) {
+        console.log('As senhas não coincidem!');
+        return;
+      }
+
+      // Lógica de cadastro
+      console.log('Cadastro com:', this.email, this.password, this.name, this.passwordConf);
     }
   }
 });

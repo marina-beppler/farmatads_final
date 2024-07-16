@@ -27,14 +27,14 @@
     </ion-content>
   </ion-page>
 </template>
-  
+
 <script lang="ts">
 import { defineComponent } from 'vue';
 import { IonPage, IonHeader, IonToolbar, IonButton, IonIcon, IonContent, IonCard, IonItem, IonInput, IonButtons } from '@ionic/vue';
 import { arrowBackOutline } from 'ionicons/icons';
 import { useRouter } from 'vue-router';
 import router from '@/router';
-  
+
 export default defineComponent({
   name: 'Login',
   components: {
@@ -49,7 +49,7 @@ export default defineComponent({
     IonInput,
     IonButtons
   },
-  setup(){
+  setup() {
     const router = useRouter();
     return {
       email: '',
@@ -66,11 +66,18 @@ export default defineComponent({
         console.log('Login é necessário');
         return;
       }
-      //logica de login
+
+      const padrao = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+      if (!padrao.test(this.email)) {
+        console.log('E-mail inválido!');
+        return;
+      }
+
+      // Lógica de login
       console.log('Login com:', this.email, this.password);
     },
     openForgotPasswordModal() {
-      router.push('/forgotPassword');  
+      router.push('/forgotPassword');
       console.log('Abrir esquecer minha senha');
     }
   }
@@ -120,7 +127,7 @@ ion-toolbar {
   --color: black;
 }
 
-#input-email{
+#input-email {
   position: absolute;
   top: 20%;
   left: 5%;
@@ -130,7 +137,7 @@ ion-toolbar {
   margin: 15px;
 }
 
-#input-password{
+#input-password {
   position: absolute;
   top: 35%;
   left: 5%;
@@ -140,7 +147,7 @@ ion-toolbar {
   margin: 15px;
 }
 
-#input-fpassword-button{
+#input-fpassword-button {
   position: absolute;
   top: 80%;
   left: 5%;
@@ -150,7 +157,7 @@ ion-toolbar {
   margin: 15px;
 }
 
-#input-login-button{
+#input-login-button {
   position: absolute;
   top: 50%;
   left: 5%;
@@ -160,7 +167,7 @@ ion-toolbar {
   margin: 15px;
 }
 
-#text-fpassword{
+#text-fpassword {
   position: absolute;
   top: 70%;
   left: 5%;
@@ -169,5 +176,4 @@ ion-toolbar {
   width: 90%;
   margin: 15px;
 }
-
 </style>

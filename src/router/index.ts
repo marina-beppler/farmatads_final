@@ -5,8 +5,8 @@ import Login  from '../views/Login.vue';
 import Cadastro from '../views/Cadastro.vue';
 import forgotPassword from '../views/forgotPassword.vue';
 import ResetPassword from '../views/ResetPassword.vue';
-import XaropeConfig from '../xarope/XaropeConfig.vue';
-import XaropeExtraConfig from '../xarope/XaropeExtraConfig.vue';
+import XaropeConfig from '../views/xarope/XaropeConfig.vue';
+import XaropeExtraConfig from '../views/xarope/XaropeExtraConfig.vue';
 
 const routes: Array<RouteRecordRaw> = [
   {

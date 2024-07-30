@@ -37,7 +37,7 @@ import { defineComponent } from 'vue';
 import { IonPage, IonHeader, IonToolbar, IonButton, IonIcon, IonContent, IonCard, IonItem, IonInput, IonButtons } from '@ionic/vue';
 import { arrowBackOutline } from 'ionicons/icons';
 import { useRouter } from 'vue-router';
-import router from '@/router';
+import axios from 'axios';
 
 export default defineComponent({
   name: 'Cadastro',
@@ -65,9 +65,9 @@ export default defineComponent({
   },
   methods: {
     dismissModal() {
-      router.push('/');
+      this.$router.push('/');
     },
-    cadastro() {
+    async cadastro() {
       if (!this.email || !this.password || !this.name || !this.passwordConf) {
         console.log('É necessário preencher todos os campos!');
         return;
@@ -84,8 +84,17 @@ export default defineComponent({
         return;
       }
 
-      // Lógica de cadastro
-      console.log('Cadastro com:', this.email, this.password, this.name, this.passwordConf);
+      try {
+        const response = await axios.post('http://localhost:3000/register', {
+          username: this.name,
+          password: this.password,
+          email: this.email,
+        });
+        console.log(response.data);
+        this.$router.push('/login');
+      } catch (error) {
+        console.error(error);
+      }
     }
   }
 });
@@ -110,78 +119,5 @@ p {
   text-align: center;
   height: 100%;
   background-color: #ffffff;
-  padding: 10px;
-}
-
-ion-button {
-  --background-activated: #bf9dda;
-  --background: #C6ADD9;
-  --color: black;
-}
-
-ion-content {
-  --background: #E5F0F7 !important;
-  --color: black;
-  --overflow: hidden;
-}
-
-ion-item {
-  --background: #E3D1F1 !important;
-  --color: black;
-}
-
-ion-toolbar {
-  --background: #BEDDF0 !important;
-  --color: black;
-}
-
-#input-name {
-  position: absolute;
-  top: 15%;
-  left: 5%;
-  -ms-transform: translate(-15%, -15%);
-  transform: translate(-5%, -5%);
-  width: 90%;
-  margin: 15px;
-}
-
-#input-email {
-  position: absolute;
-  top: 30%;
-  left: 5%;
-  -ms-transform: translate(-30%, -30%);
-  transform: translate(-5%, -5%);
-  width: 90%;
-  margin: 15px;
-}
-
-#input-password {
-  position: absolute;
-  top: 45%;
-  left: 5%;
-  -ms-transform: translate(-45%, -45%);
-  transform: translate(-5%, -5%);
-  width: 90%;
-  margin: 15px;
-}
-
-#input-password-conf {
-  position: absolute;
-  top: 60%;
-  left: 5%;
-  -ms-transform: translate(-60%, -60%);
-  transform: translate(-5%, -5%);
-  width: 90%;
-  margin: 15px;
-}
-
-#cadastro-button {
-  position: absolute;
-  top: 75%;
-  left: 5%;
-  -ms-transform: translate(-75%, -75%);
-  transform: translate(-5%, -5%);
-  width: 90%;
-  margin: 15px;
 }
 </style>

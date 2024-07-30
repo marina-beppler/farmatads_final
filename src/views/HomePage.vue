@@ -1,44 +1,28 @@
-<script script lang="ts">
-import { defineComponent, ref } from 'vue';
-import { IonPage, IonButton, IonCard, IonContent, IonHeader, modalController, IonImg } from '@ionic/vue';
-import Login from "./Login.vue";
-import Cadastro from "./Cadastro.vue"
+<script lang="ts">
+import { defineComponent } from 'vue';
+import { IonPage, IonButton, IonCard, IonContent, IonHeader, IonImg } from '@ionic/vue';
+import router from '@/router'; 
 
 export default defineComponent({
   name: 'HomePage',
   components: {
     IonPage,
     IonButton,
+    IonHeader,
+    IonContent,
+    IonCard,
+    IonImg
   },
   setup() {
-    const modalRef = ref(null);
-
-    const openLogin = async () => {
-      try {
-        const modal = await modalController.create({
-          component: Login
-        });
-        await modal.present();
-        console.log('Login modal opened');
-      } catch (error) {
-        console.error('Error opening login modal:', error);
-      }
+    const openLogin = () => {
+      router.push('/login'); // Assuming the login route is '/login'
     };
 
-    const openCadastro = async () => {
-      try {
-        const modal = await modalController.create({
-          component: Cadastro
-        });
-        await modal.present();
-        console.log('Cadstro modal opened');
-      } catch (error) {
-        console.error('Error opening cadastro modal:', error);
-      }
+    const openCadastro = () => {
+      router.push('/cadastro'); // Assuming the cadastro route is '/cadastro'
     };
 
     return {
-      modalRef,
       openLogin,
       openCadastro
     };
@@ -72,6 +56,7 @@ export default defineComponent({
   padding: 16px;
   background-color: #E7F7F4;
 }
+
 h1{
   color: #469FBC;
   font-family: 'Literata';

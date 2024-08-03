@@ -33,7 +33,7 @@ import { defineComponent } from 'vue';
 import { IonPage, IonHeader, IonToolbar, IonButton, IonIcon, IonContent, IonCard, IonItem, IonInput, IonButtons } from '@ionic/vue';
 import { arrowBackOutline } from 'ionicons/icons';
 import { useRouter } from 'vue-router';
-import axios from 'axios';
+import router from '@/router';
 
 export default defineComponent({
   name: 'Login',
@@ -59,9 +59,9 @@ export default defineComponent({
   },
   methods: {
     dismissModal() {
-      this.$router.push('/home');
+      router.push('/home');
     },
-    async login() {
+    login() {
       if (!this.email || !this.password) {
         console.log('Login é necessário');
         return;
@@ -73,20 +73,11 @@ export default defineComponent({
         return;
       }
 
-      try {
-        const response = await axios.post('http://localhost:3000/login', {
-          username: this.email,
-          password: this.password
-        });
-        localStorage.setItem('token', response.data.token);
-        console.log('Login successful:', response.data);
-        this.$router.push('/home');
-      } catch (error) {
-        console.error('Login failed:', error);
-      }
+      // Lógica de login
+      console.log('Login com:', this.email, this.password);
     },
     openForgotPasswordModal() {
-      this.$router.push('/forgotPassword');
+      router.push('/forgotPassword');
       console.log('Abrir esquecer minha senha');
     }
   }

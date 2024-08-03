@@ -37,7 +37,7 @@ import { defineComponent } from 'vue';
 import { IonPage, IonHeader, IonToolbar, IonButton, IonIcon, IonContent, IonCard, IonItem, IonInput, IonButtons } from '@ionic/vue';
 import { arrowBackOutline } from 'ionicons/icons';
 import { useRouter } from 'vue-router';
-import router from '@/router';
+import axios from 'axios';
 
 export default defineComponent({
   name: 'Cadastro',
@@ -65,9 +65,9 @@ export default defineComponent({
   },
   methods: {
     dismissModal() {
-      router.push('/');
+      this.$router.push('/');
     },
-    cadastro() {
+    async cadastro() {
       if (!this.email || !this.password || !this.name || !this.passwordConf) {
         console.log('É necessário preencher todos os campos!');
         return;
@@ -84,8 +84,17 @@ export default defineComponent({
         return;
       }
 
-      // Lógica de cadastro
-      console.log('Cadastro com:', this.email, this.password, this.name, this.passwordConf);
+      try {
+        const response = await axios.post('http://localhost:3000/register', {
+          username: this.name,
+          password: this.password,
+          email: this.email,
+        });
+        console.log(response.data);
+        this.$router.push('/login');
+      } catch (error) {
+        console.error(error);
+      }
     }
   }
 });

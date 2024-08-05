@@ -21,7 +21,7 @@
           </ion-item>
           <ion-button id="input-login-button" expand="block" @click="login">Login</ion-button>
           <p id="text-fpassword">Clique no botão abaixo caso tenha esquecido sua senha:</p>
-          <ion-button id="input-fpassword-button" expand="block" @click="openForgotPasswordModal">Esqueci minha senha</ion-button>
+          <ion-button id="input-fpassword-button" expand="block" @click="openForgotPassword">Esqueci minha senha</ion-button>
         </ion-card>
       </ion-card>
     </ion-content>
@@ -79,21 +79,19 @@ export default defineComponent({
           password: this.password,
         });
         console.log(response.data);
-        // Save token to localStorage or Vuex store
         localStorage.setItem('token', response.data.token);
-        this.$router.push('/dashboard'); // Redirect to dashboard or desired route
+        this.$router.push('/xaropeConfig');
       } catch (error) {
         console.error(error);
       }
     },
-    openForgotPasswordModal() {
+    openForgotPassword() {
       this.$router.push('/forgotPassword');
       console.log('Abrir esquecer minha senha');
     }
   }
 });
 </script>
-
 <style scoped>
 @import url(https://fonts.googleapis.com/css?family=Kufam);
 

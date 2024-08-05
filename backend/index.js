@@ -1,18 +1,17 @@
+// index.js
+require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const bodyParser = require('body-parser');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const pool = require('./db');
-require('dotenv').config();
-
 const app = express();
 app.use(cors());
 app.use(bodyParser.json());
 
 const PORT = process.env.PORT || 3000;
 
-// Register (Sign-in) Endpoint
 app.post('/register', async (req, res) => {
   const { name, email, password } = req.body;
 
@@ -24,7 +23,7 @@ app.post('/register', async (req, res) => {
 
   try {
     const newUser = await pool.query(
-      'INSERT INTO users (name, email, password) VALUES ($1, $2, $3) RETURNING *',
+      'INSERT INTO farmatads.users (name, email, password) VALUES ($1, $2, $3) RETURNING *',
       [name, email, hashedPassword]
     );
     const token = jwt.sign({ userId: newUser.rows[0].id }, process.env.JWT_SECRET, { expiresIn: '730h' });
@@ -35,7 +34,6 @@ app.post('/register', async (req, res) => {
   }
 });
 
-// Login Endpoint
 app.post('/login', async (req, res) => {
   const { email, password } = req.body;
 
@@ -44,7 +42,7 @@ app.post('/login', async (req, res) => {
   }
 
   try {
-    const user = await pool.query('SELECT * FROM users WHERE email = $1', [email]);
+    const user = await pool.query('SELECT * FROM farmatads.users WHERE email = $1', [email]);
 
     if (user.rows.length === 0) {
       return res.status(400).json({ error: 'Credenciais inválidas!' });

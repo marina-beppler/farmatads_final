@@ -33,8 +33,8 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue';
-import { IonPage, IonHeader, IonToolbar, IonButton, IonIcon, IonContent, IonCard, IonItem, IonInput, IonButtons } from '@ionic/vue';
+import { defineComponent, ref } from 'vue';
+import { IonPage, IonHeader, IonToolbar, IonButton, IonIcon, IonContent, IonCard, IonItem, IonInput, IonButtons, toastController } from '@ionic/vue';
 import { arrowBackOutline } from 'ionicons/icons';
 import { useRouter } from 'vue-router';
 import axios from 'axios';
@@ -56,9 +56,9 @@ export default defineComponent({
   setup() {
     const router = useRouter();
     return {
-      email: '',
-      password: '',
-      name: '',
+      email: ref(''),
+      password: ref(''),
+      name: ref(''),
       passwordConf: '',
       arrowBackOutline: arrowBackOutline
     };
@@ -67,20 +67,27 @@ export default defineComponent({
     dismissModal() {
       this.$router.push('/');
     },
+    async presentToast (message: string) {
+      const toast = await toastController.create({
+        message: message,
+        duration: 1500
+      });
+      toast.present();
+    },
     async cadastro() {
       if (!this.email || !this.password || !this.name || !this.passwordConf) {
-        console.log('É necessário preencher todos os campos!');
+        await this.presentToast('É necessário preencher todos os campos!');
         return;
       }
 
       const padrao = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
       if (!padrao.test(this.email)) {
-        console.log('E-mail inválido!');
+        await this.presentToast('E-mail inválido!');
         return;
       }
 
       if (this.password !== this.passwordConf) {
-        console.log('As senhas não coincidem!');
+        await this.presentToast('As senhas não coincidem!');
         return;
       }
 

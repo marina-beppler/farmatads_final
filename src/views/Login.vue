@@ -28,9 +28,10 @@
   </ion-page>
 </template>
 
+
 <script lang="ts">
-import { defineComponent } from 'vue';
-import { IonPage, IonHeader, IonToolbar, IonButton, IonIcon, IonContent, IonCard, IonItem, IonInput, IonButtons } from '@ionic/vue';
+import { defineComponent, ref } from 'vue';
+import { IonPage, IonHeader, IonToolbar, IonButton, IonIcon, IonContent, IonCard, IonItem, IonInput, IonButtons, IonToast, toastController } from '@ionic/vue';
 import { arrowBackOutline } from 'ionicons/icons';
 import { useRouter } from 'vue-router';
 import axios from 'axios';
@@ -47,13 +48,14 @@ export default defineComponent({
     IonCard,
     IonItem,
     IonInput,
-    IonButtons
+    IonButtons,
+    IonToast,
   },
   setup() {
     const router = useRouter();
     return {
-      email: '',
-      password: '',
+      email: ref(''),
+      password: ref(''),
       arrowBackOutline: arrowBackOutline
     };
   },
@@ -61,15 +63,22 @@ export default defineComponent({
     dismissModal() {
       this.$router.push('/home');
     },
+    async presentToast (message: string) {
+      const toast = await toastController.create({
+        message: message,
+        duration: 1500
+      });
+      toast.present();
+    },
     async login() {
       if (!this.email || !this.password) {
-        console.log('Login é necessário');
+        await this.presentToast('Login é necessário');
         return;
       }
 
       const padrao = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
       if (!padrao.test(this.email)) {
-        console.log('E-mail inválido!');
+        await this.presentToast('E-mail/senha inválidos!');
         return;
       }
 
@@ -88,10 +97,11 @@ export default defineComponent({
     openForgotPassword() {
       this.$router.push('/forgotPassword');
       console.log('Abrir esquecer minha senha');
-    }
+    }    
   }
 });
 </script>
+
 <style scoped>
 @import url(https://fonts.googleapis.com/css?family=Kufam);
 

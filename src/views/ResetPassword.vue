@@ -16,7 +16,7 @@
           <ion-item :clear-input="true" id="input-codigo" lines="none">
             <ion-input v-model="codigo" placeholder="Código:" required/>
           </ion-item>
-          <ion-button size="large" expand="block" @click="verifyCode">Verificar código</ion-button>
+          <ion-button size="small" expand="block" @click="verifyCode" id="verifyButton">Verificar código</ion-button>
           <p id="text-two" v-if="isCodeValid">Crie uma nova senha no campo abaixo</p>
           <ion-item id="input-senha" lines="none" v-if="isCodeValid">
             <ion-input :clear-input="true" v-model="senha" type="password" placeholder="Nova senha:" required/>
@@ -154,6 +154,16 @@ ion-toolbar {
   top: 20%;
   left: 5%;
   -ms-transform: translate(-20%, -20%);
+  transform: translate(-5%, -5%);
+  width: 90%;
+  margin: 15px;
+}
+
+#verifyButton {
+  position: absolute;
+  top: 30%;
+  left: 5%;
+  -ms-transform: translate(-30%, -30%);
   transform: translate(-5%, -5%);
   width: 90%;
   margin: 15px;

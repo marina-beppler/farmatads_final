@@ -1,5 +1,5 @@
 {
-  "name": "ionic-app-base",
+  "name": "farmatads",
   "private": true,
   "version": "0.0.0",
   "type": "module",
@@ -11,7 +11,8 @@
     "test:unit": "vitest",
     "lint": "eslint .",
     "ionic:build": "npm run build",
-    "ionic:serve": "npm run dev"
+    "ionic:serve": "npm run dev",
+    "serve": "vite"
   },
   "dependencies": {
     "@capacitor/android": "5.7.3",

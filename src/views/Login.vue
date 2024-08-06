@@ -89,7 +89,7 @@ export default defineComponent({
         });
         console.log(response.data);
         localStorage.setItem('token', response.data.token);
-        this.$router.push('/xaropeConfig');
+        this.$router.push('/menu');
       } catch (error) {
         console.error(error);
       }

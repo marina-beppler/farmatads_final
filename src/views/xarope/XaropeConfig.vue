@@ -1,5 +1,5 @@
 <script lang="ts">
-import { defineComponent, ref } from 'vue';
+import { defineComponent, ref, onMounted } from 'vue';
 import {
   IonButton, IonButtons, IonHeader, IonIcon, IonPage, IonCard, IonContent, IonInput, IonItem, IonLabel, IonDatetime, IonToolbar
 } from '@ionic/vue';
@@ -26,10 +26,16 @@ export default defineComponent({
   setup() {
     const router = useRouter();
 
+    const selectedMedicationType = ref('');
+
     const remedio = ref('');
     const dose = ref(0);
     const qtdDoses = ref(0);
     const selectedTime = ref('');
+
+    onMounted(() => {
+      selectedMedicationType.value = localStorage.getItem('selectedMedicationType') || '';
+    });
 
     const incrementDose = () => {
       dose.value++;
@@ -52,11 +58,12 @@ export default defineComponent({
     };
 
     const backButton = () => {
-      router.push("/");
+      router.push("/remedioselect");
     };
 
     const goToNextPage = () => {
       router.push("/xaropeextra");
+      console.log(selectedMedicationType.value);
     };
 
     return {

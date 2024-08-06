@@ -1,7 +1,7 @@
 import { createRouter, createWebHistory } from '@ionic/vue-router';
 import { RouteRecordRaw } from 'vue-router';
 import HomePage from '../views/HomePage.vue';
-import Login  from '../views/Login.vue';
+import Login from '../views/Login.vue';
 import Cadastro from '../views/Cadastro.vue';
 import forgotPassword from '../views/forgotPassword.vue';
 import ResetPassword from '../views/ResetPassword.vue';
@@ -14,6 +14,7 @@ import CapsulaConfig from '../views/capsula/CapsulaConfig.vue';
 import CapsulaExtraConfig from '../views/capsula/CapsulaExtraConfig.vue';
 import ComprimidoConfig from '../views/comprimido/ComprimidoConfig.vue';
 import ComprimidoExtraConfig from '../views/comprimido/ComprimidoExtraConfig.vue';
+import { isAuthenticated } from '../../backend/auth';
 
 const routes: Array<RouteRecordRaw> = [
   {
@@ -48,53 +49,70 @@ const routes: Array<RouteRecordRaw> = [
   {
     path: '/menu',
     name: 'MainMenu',
-    component: MainMenu
+    component: MainMenu,
+    meta: { requiresAuth: true }
   },
   {
     path: '/remedios',
     name: 'RemedioInit',
-    component: RemedioInit
+    component: RemedioInit,
+    meta: { requiresAuth: true }
   },
   {
-  path: '/remedioselect',
-  name: 'RemediosSelect',
-  component: RemediosSelect
+    path: '/remedioselect',
+    name: 'RemediosSelect',
+    component: RemediosSelect,
+    meta: { requiresAuth: true }
   },
   {
     path: '/xaropeconfig',
     name: 'XaropeConfig',
-    component: XaropeConfig
+    component: XaropeConfig,
+    meta: { requiresAuth: true }
   },
   {
     path: '/xaropeextra',
     name: 'XaropeExtraConfig',
-    component: XaropeExtraConfig
+    component: XaropeExtraConfig,
+    meta: { requiresAuth: true }
   },
   {
-  path: '/capsulaconfig',
-  name: 'CapsulaConfig',
-  component: CapsulaConfig
+    path: '/capsulaconfig',
+    name: 'CapsulaConfig',
+    component: CapsulaConfig,
+    meta: { requiresAuth: true }
   },
   {
     path: '/capsulaextra',
     name: 'CapsulaExtraConfig',
-    component: CapsulaExtraConfig
+    component: CapsulaExtraConfig,
+    meta: { requiresAuth: true }
   },
   {
     path: '/comprimidoconfig',
     name: 'ComprimidoConfig',
-    component: ComprimidoConfig
+    component: ComprimidoConfig,
+    meta: { requiresAuth: true }
   },
   {
     path: '/comprimidoextra',
     name: 'ComprimidoExtraConfig',
-    component: ComprimidoExtraConfig
+    component: ComprimidoExtraConfig,
+    meta: { requiresAuth: true }
   },
-]
+];
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes
-})
+});
 
-export default router
+router.beforeEach((to, from, next) => {
+  if (to.meta.requiresAuth && !isAuthenticated()) {
+    next('/login');
+  } else {
+    next();
+  }
+});
+
+export default router;

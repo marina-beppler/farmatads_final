@@ -53,7 +53,8 @@ export default defineComponent({
     };
 
     const goToNextPage = () => {
-      router.push("/");
+      router.push("/remedios");
+      localStorage.removeItem('selectedMedicationType');
     };
 
     const selectColor = (color: string) => {

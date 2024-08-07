@@ -21,16 +21,17 @@
           </ion-item>
           <ion-button id="input-login-button" expand="block" @click="login">Login</ion-button>
           <p id="text-fpassword">Clique no botão abaixo caso tenha esquecido sua senha:</p>
-          <ion-button id="input-fpassword-button" expand="block" @click="openForgotPasswordModal">Esqueci minha senha</ion-button>
+          <ion-button id="input-fpassword-button" expand="block" @click="openForgotPassword">Esqueci minha senha</ion-button>
         </ion-card>
       </ion-card>
     </ion-content>
   </ion-page>
 </template>
 
+
 <script lang="ts">
-import { defineComponent } from 'vue';
-import { IonPage, IonHeader, IonToolbar, IonButton, IonIcon, IonContent, IonCard, IonItem, IonInput, IonButtons } from '@ionic/vue';
+import { defineComponent, ref } from 'vue';
+import { IonPage, IonHeader, IonToolbar, IonButton, IonIcon, IonContent, IonCard, IonItem, IonInput, IonButtons, IonToast, toastController } from '@ionic/vue';
 import { arrowBackOutline } from 'ionicons/icons';
 import { useRouter } from 'vue-router';
 import axios from 'axios';
@@ -47,13 +48,14 @@ export default defineComponent({
     IonCard,
     IonItem,
     IonInput,
-    IonButtons
+    IonButtons,
+    IonToast,
   },
   setup() {
     const router = useRouter();
     return {
-      email: '',
-      password: '',
+      email: ref(''),
+      password: ref(''),
       arrowBackOutline: arrowBackOutline
     };
   },
@@ -61,34 +63,41 @@ export default defineComponent({
     dismissModal() {
       this.$router.push('/home');
     },
+    async presentToast (message: string) {
+      const toast = await toastController.create({
+        message: message,
+        duration: 1500
+      });
+      toast.present();
+    },
     async login() {
       if (!this.email || !this.password) {
-        console.log('Login é necessário');
+        await this.presentToast('Login é necessário');
         return;
       }
 
       const padrao = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
       if (!padrao.test(this.email)) {
-        console.log('E-mail inválido!');
+        await this.presentToast('E-mail/senha inválidos!');
         return;
       }
 
       try {
         const response = await axios.post('http://localhost:3000/login', {
-          username: this.email,
-          password: this.password
+          email: this.email,
+          password: this.password,
         });
+        console.log(response.data);
         localStorage.setItem('token', response.data.token);
-        console.log('Login successful:', response.data);
-        this.$router.push('/home');
+        this.$router.push('/menu');
       } catch (error) {
-        console.error('Login failed:', error);
+        console.error(error);
       }
     },
-    openForgotPasswordModal() {
+    openForgotPassword() {
       this.$router.push('/forgotPassword');
       console.log('Abrir esquecer minha senha');
-    }
+    }    
   }
 });
 </script>

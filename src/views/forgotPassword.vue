@@ -16,7 +16,7 @@
           <ion-item lines="none">
             <ion-input v-model="email" type="email" placeholder="Email:" required></ion-input>
           </ion-item>
-          <ion-button expand="block" @click="codigo">Receber código</ion-button>
+          <ion-button expand="block" @click="sendCode">Receber código</ion-button>
         </ion-card>
       </ion-card>
     </ion-content>
@@ -25,9 +25,10 @@
 
 <script lang="ts">
 import { defineComponent } from 'vue';
-import { IonHeader, IonToolbar, IonButton, IonButtons, IonIcon, IonInput, IonItem, IonCard, IonPage, IonContent } from '@ionic/vue';
+import { IonHeader, IonToolbar, IonButton, IonButtons, IonIcon, IonInput, IonItem, IonCard, IonPage, IonContent, toastController } from '@ionic/vue';
 import { arrowBackOutline } from 'ionicons/icons';
 import { useRouter } from 'vue-router';
+import axios from 'axios';
 
 export default defineComponent({
   name: 'forgotPassword',
@@ -43,7 +44,7 @@ export default defineComponent({
     IonPage,
     IonContent
   },
-  setup(){
+  setup() {
     const router = useRouter();
     return {
       email: '',
@@ -54,21 +55,35 @@ export default defineComponent({
     dismissModal() {
       this.$router.push('/login');
     },
-    codigo() {
+    async presentToast(message: string) {
+      const toast = await toastController.create({
+        message: message,
+        duration: 1500
+      });
+      toast.present();
+    },
+    async sendCode() {
       if (!this.email) {
-        console.log('Informe um email!');
+        this.presentToast('Informe um email!');
         return;
       }
       
       const padrao = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
       if (!padrao.test(this.email)) {
-        console.log('E-mail inválido!');
+        this.presentToast('E-mail inválido!');
         return;
       }
 
-      // Lógica de envio do código
-      console.log('Email enviado!');
-      this.$router.push('/resetPassword');
+      try {
+        const response = await axios.post('http://localhost:3000/send-code', {
+          email: this.email,
+        });
+        this.presentToast('Email enviado!');
+        this.$router.push('/resetPassword');
+      } catch (error) {
+        console.error(error);
+        this.presentToast('Erro ao enviar email!');
+      }
     }
   }
 });

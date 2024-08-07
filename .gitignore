@@ -13,12 +13,18 @@ Thumbs.db
 UserInterfaceState.xcuserstate
 $RECYCLE.BIN/
 
+# Environment files
+.env
+.env.local
+.env.*.local
+
 *.log
 log.txt
 npm-debug.log*
 
 /.idea
 /.ionic
+.ionicons/
 /.sass-cache
 /.sourcemaps
 /.versions
@@ -30,3 +36,17 @@ npm-debug.log*
 /platforms
 /plugins
 /www
+
+# Node.js
+node_modules/
+npm-debug.log
+yarn-error.log
+package-lock.json
+yarn.lock
+
+# Logs
+*.log
+logs/
+
+# Build output
+build/

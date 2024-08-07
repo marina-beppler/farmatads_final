@@ -97,7 +97,7 @@ app.post('/send-code', async (req, res) => {
 
 app.get('/xarope', async (req, res) => {
   try {
-    const xaropeData = await pool.query('SELECT nome, cor FROM farmatads.xarope'); // Adjust the query as needed
+    const xaropeData = await pool.query('SELECT nome, cor FROM farmatads.xarope'); 
     res.json(xaropeData.rows);
   } catch (error) {
     console.error('Error fetching xarope data:', error.message);
@@ -123,6 +123,17 @@ app.post('/xarope', async (req, res) => {
     res.status(500).json({ error: 'Server error' });
   }
 });
+
+app.get('/capsula', async (req, res) => {
+  try {
+    const capsulaData = await pool.query('SELECT nome, cor FROM farmatads.capsula'); 
+    res.json(capsulaData.rows);
+  } catch (error) {
+    console.error('Error fetching capsula data:', error.message);
+    res.status(500).json({ error: 'Server error' });
+  }
+});
+
 
 app.post('/capsula', async (req, res) => {
   const { tipo, nome, horaInicial, intervaloTempo, cor, qtdCapsula } = req.body;

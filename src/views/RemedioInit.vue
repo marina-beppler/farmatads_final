@@ -14,6 +14,14 @@
               <img :src="`src/assets/xarope-${item.cor}.png`" :alt="item.cor" class="xarope-image" />
             </div>
           </div>
+          <div v-if="capsulaData" class="capsula-list">
+            <div v-for="item in capsulaData" :key="item.id" :class="['capsula-item', `capsula-${item.cor}`]">
+              <div class="capsula-info">
+                <h1 class="capsula-name" :style="{ color: getColor(item.cor) }">{{ item.nome }}</h1>
+              </div>
+              <img :src="`src/assets/capsula-${item.cor}.png`" :alt="item.cor" class="capsula-image" />
+            </div>
+          </div>
           <div class="add-medication" @click="addRemedio">
             <ion-icon :icon="addOutline" size="large"></ion-icon>
           </div>
@@ -47,6 +55,7 @@ export default defineComponent({
   },
   setup() {
     const xaropeData = ref<any[]>([]);
+      const capsulaData = ref<any[]>([]);
     const route = useRoute();
 
     const fetchXaropeData = async () => {
@@ -59,13 +68,25 @@ export default defineComponent({
       }
     };
 
+    const fetchCapsulaData = async () => {
+      try {
+        const response = await axios.get('http://localhost:3000/capsula'); 
+        capsulaData.value = response.data;
+        console.log(capsulaData.value);
+      } catch (error) {
+        console.error("Error fetching capsula data:", error);
+      }
+    };
+
     onMounted(() => {
       fetchXaropeData();
+      fetchCapsulaData();
     });
 
     
     watch(route, () => {
       fetchXaropeData();
+      fetchCapsulaData();
     });
 
     const addRemedio = () => {
@@ -87,6 +108,7 @@ export default defineComponent({
       addOutline,
       addRemedio,
       xaropeData,
+      capsulaData,
       getColor
     };
   }
@@ -181,6 +203,38 @@ h1{
 ion-content {
   --background: #E5F0F7 !important;
   --color: black;
+}
+.capsula-list {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 20px; 
+}
+
+.capsula-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 10px 0;
+}
+
+.capsula-image {
+  width: 200px;
+  height: 200px;
+  margin-top: 10px; 
+}
+
+.capsula-info {
+  display: flex;
+  flex-direction: column; 
+  align-items: center;
+}
+
+.capsula-name {
+  font-family: "Kufam";
+  font-size: 25px;
+  text-align: center;
 }
 </style>
 

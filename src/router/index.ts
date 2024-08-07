@@ -14,6 +14,7 @@ import CapsulaConfig from '../views/capsula/CapsulaConfig.vue';
 import CapsulaExtraConfig from '../views/capsula/CapsulaExtraConfig.vue';
 import ComprimidoConfig from '../views/comprimido/ComprimidoConfig.vue';
 import ComprimidoExtraConfig from '../views/comprimido/ComprimidoExtraConfig.vue';
+import Bulas from '../views/Bulas.vue';
 import { isAuthenticated } from '../../backend/auth';
 
 const routes: Array<RouteRecordRaw> = [
@@ -50,6 +51,12 @@ const routes: Array<RouteRecordRaw> = [
     path: '/menu',
     name: 'MainMenu',
     component: MainMenu,
+    meta: { requiresAuth: true }
+  },
+    {
+    path: '/bulas',
+    name: 'Bulas',
+    component: Bulas,
     meta: { requiresAuth: true }
   },
   {

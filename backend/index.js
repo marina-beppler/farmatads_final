@@ -12,7 +12,6 @@ app.use(bodyParser.json());
 
 const PORT = process.env.PORT || 3000;
 
-// Nodemailer configuration
 const transporter = nodemailer.createTransport({
   service: 'gmail',
   auth: {
@@ -78,7 +77,7 @@ app.post('/send-code', async (req, res) => {
     return res.status(400).json({ error: 'Email é obrigatório!' });
   }
   
-  const code = Math.floor(100000 + Math.random() * 900000).toString(); // Generate a 6-digit code
+  const code = Math.floor(100000 + Math.random() * 900000).toString(); 
 
   const mailOptions = {
     from: process.env.EMAIL_USER,
@@ -93,6 +92,73 @@ app.post('/send-code', async (req, res) => {
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: 'Erro ao enviar email' });
+  }
+});
+
+app.get('/xarope', async (req, res) => {
+  try {
+    const xaropeData = await pool.query('SELECT nome, cor FROM farmatads.xarope'); // Adjust the query as needed
+    res.json(xaropeData.rows);
+  } catch (error) {
+    console.error('Error fetching xarope data:', error.message);
+    res.status(500).json({ error: 'Server error' });
+  }
+});
+
+app.post('/xarope', async (req, res) => {
+  const { tipo, nome, horaInicial, intervaloTempo, cor, dosagem, qtdDose } = req.body;
+
+  if (!tipo || !nome || !horaInicial || !intervaloTempo || !cor || !dosagem || !qtdDose) {
+    return res.status(400).json({ error: 'Todos os campos são obrigatórios!' });
+  }
+
+  try {
+    const newXarope = await pool.query(
+      'INSERT INTO farmatads.xarope (tipo, nome, horaInicial, intervaloTempo, cor, dosagem, qtdDose) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *',
+      [tipo, nome, horaInicial, intervaloTempo, cor, dosagem, qtdDose]
+    );
+    res.json(newXarope.rows[0]);
+  } catch (error) {
+    console.error('Error inserting xarope:', error.message);
+    res.status(500).json({ error: 'Server error' });
+  }
+});
+
+app.post('/capsula', async (req, res) => {
+  const { tipo, nome, horaInicial, intervaloTempo, cor, qtdCapsula } = req.body;
+
+  if (!tipo || !nome || !horaInicial || !intervaloTempo || !cor || !qtdCapsula) {
+    return res.status(400).json({ error: 'Todos os campos são obrigatórios!' });
+  }
+
+  try {
+    const newCapsula = await pool.query(
+      'INSERT INTO farmatads.capsula (tipo, nome, horaInicial, intervaloTempo, cor, qtdCapsula) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *',
+      [tipo, nome, horaInicial, intervaloTempo, cor, qtdCapsula]
+    );
+    res.json(newCapsula.rows[0]);
+  } catch (error) {
+    console.error(error.message);
+    res.status(500).json({ error: 'Server error' });
+  }
+});
+
+app.post('/comprimido', async (req, res) => {
+  const { tipo, nome, horaInicial, intervaloTempo, cor, qtdComprimido } = req.body;
+
+  if (!tipo || !nome || !horaInicial || !intervaloTempo || !cor || !qtdComprimido) {
+    return res.status(400).json({ error: 'Todos os campos são obrigatórios!' });
+  }
+
+  try {
+    const newComprimido = await pool.query(
+      'INSERT INTO farmatads.comprimido (tipo, nome, horaInicial, intervaloTempo, cor, qtdComprimido) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *',
+      [tipo, nome, horaInicial, intervaloTempo, cor, qtdComprimido]
+    );
+    res.json(newComprimido.rows[0]);
+  } catch (error) {
+    console.error(error.message);
+    res.status(500).json({ error: 'Server error' });
   }
 });
 

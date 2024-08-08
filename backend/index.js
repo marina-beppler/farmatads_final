@@ -98,9 +98,6 @@ app.post('/send-code', async (req, res) => {
 app.get('/xarope', async (req, res) => {
   try {
     const xaropeData = await pool.query('SELECT id, nome, cor, horainicial, intervalotempo FROM farmatads.xarope');
-    xaropeData.rows.forEach(row => {
-      console.log(`Record ID: ${row.id}, Hora Inicial: ${row.horainicial}, Intervalo Tempo: ${row.intervalotempo}`);
-    });
     res.json(xaropeData.rows);
   } catch (error) {
     console.error('Error fetching xarope data:', error.message);
@@ -108,18 +105,34 @@ app.get('/xarope', async (req, res) => {
   }
 });
 
+app.get('/xarope/:id', async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const xaropeData = await pool.query('SELECT id, nome, cor, horainicial, intervalotempo, dosagem, qtddose FROM farmatads.xarope WHERE id = $1', [id]);
+    console.log ('xarope:', xaropeData.value);
+    if (xaropeData.rows.length === 0) {
+      return res.status(404).json({ error: 'Xarope não encontrado' });
+    }
+    
+    res.json(xaropeData.rows[0]);
+  } catch (error) {
+    console.error('Error fetching xarope by ID:', error.message);
+    res.status(500).json({ error: 'Server error' });
+  }
+});
 
 app.post('/xarope', async (req, res) => {
-  const { tipo, nome, horainicial, intervalotempo, cor, dosagem, qtdDose } = req.body;
+  const { tipo, nome, horaInicial, intervaloTempo, cor, dosagem, qtdDose } = req.body;
 
-  if (!tipo || !nome || !horainicial || !intervalotempo || !cor || !dosagem || !qtdDose) {
+  if (!tipo || !nome || !horaInicial || !intervaloTempo || !cor || !dosagem || !qtdDose) {
     return res.status(400).json({ error: 'Todos os campos são obrigatórios!' });
   }
 
   try {
     const newXarope = await pool.query(
-      'INSERT INTO farmatads.xarope (tipo, nome, horainicial, intervalotempo, cor, dosagem, qtdDose) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *',
-      [tipo, nome, horainicial, intervalotempo, cor, dosagem, qtdDose]
+      'INSERT INTO farmatads.xarope (tipo, nome, horaInicial, intervaloTempo, cor, dosagem, qtdDose) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *',
+      [tipo, nome, horaInicial, intervaloTempo, cor, dosagem, qtdDose]
     );
     res.json(newXarope.rows[0]);
   } catch (error) {
@@ -130,12 +143,12 @@ app.post('/xarope', async (req, res) => {
 
 app.put('/xarope/:id', async (req, res) => {
   const { id } = req.params;
-  const { nome, qtd, horainicial, cor } = req.body;
+  const { nome, qtddose, dosagem, horainicial, cor } = req.body;
 
   try {
     await pool.query(
-      'UPDATE xarope SET nome = $1, qtd = $2, horainicial = $3, cor = $4 WHERE id = $5',
-      [nome, qtd, horainicial, cor, id]
+      'UPDATE farmatads.xarope SET nome = $1, qtddose = $2, dosagem = $3, horainicial = $4, cor = $5 WHERE id = $6',
+      [nome, qtddose, dosagem, horainicial, cor, id]
     );
     res.status(200).send('Xarope updated successfully');
   } catch (error) {
@@ -227,9 +240,6 @@ app.delete('/capsula/:id', async (req, res) => {
 app.get('/comprimido', async (req, res) => {
   try {
     const comprimidoData = await pool.query('SELECT id, nome, cor, horainicial, intervalotempo FROM farmatads.comprimido');
-    comprimidoData.rows.forEach(row => {
-      console.log(`Record ID: ${row.id}, Hora Inicial: ${row.horainicial}, Intervalo Tempo: ${row.intervalotempo}`);
-    });
     res.json(comprimidoData.rows);
   } catch (error) {
     console.error('Error fetching comprimido data:', error.message);

@@ -1,21 +1,22 @@
 import { createRouter, createWebHistory } from '@ionic/vue-router';
 import { RouteRecordRaw } from 'vue-router';
+import { isAuthenticated } from '../../backend/auth';
+import Bulas from '../views/Bulas.vue';
+import Cadastro from '../views/Cadastro.vue';
 import HomePage from '../views/HomePage.vue';
 import Login from '../views/Login.vue';
-import Cadastro from '../views/Cadastro.vue';
-import forgotPassword from '../views/forgotPassword.vue';
-import ResetPassword from '../views/ResetPassword.vue';
 import MainMenu from '../views/MainMenu.vue';
 import RemedioInit from '../views/RemedioInit.vue';
 import RemediosSelect from '../views/RemediosSelect.vue';
-import XaropeConfig from '../views/xarope/XaropeConfig.vue';
-import XaropeExtraConfig from '../views/xarope/XaropeExtraConfig.vue';
+import ResetPassword from '../views/ResetPassword.vue';
 import CapsulaConfig from '../views/capsula/CapsulaConfig.vue';
 import CapsulaExtraConfig from '../views/capsula/CapsulaExtraConfig.vue';
 import ComprimidoConfig from '../views/comprimido/ComprimidoConfig.vue';
 import ComprimidoExtraConfig from '../views/comprimido/ComprimidoExtraConfig.vue';
-import Bulas from '../views/Bulas.vue';
-import { isAuthenticated } from '../../backend/auth';
+import EditXarope from '../views/edit/EditXarope.vue';
+import forgotPassword from '../views/forgotPassword.vue';
+import XaropeConfig from '../views/xarope/XaropeConfig.vue';
+import XaropeExtraConfig from '../views/xarope/XaropeExtraConfig.vue';
 
 const routes: Array<RouteRecordRaw> = [
   {
@@ -82,6 +83,11 @@ const routes: Array<RouteRecordRaw> = [
     name: 'XaropeExtraConfig',
     component: XaropeExtraConfig,
     meta: { requiresAuth: true }
+  },
+  {
+    path: '/editxarope/:id',
+    name: 'EditXarope',
+    component: EditXarope
   },
   {
     path: '/capsulaconfig',

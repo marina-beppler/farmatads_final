@@ -104,9 +104,7 @@ export default defineComponent({
     const fetchXaropeData = async () => {
       try {
         const response = await axios.get('http://localhost:3000/xarope'); 
-        console.log('xarope:', response.data);
         xaropeData.value = response.data;
-        console.log(xaropeData.value);
       } catch (error) {
         console.error("Error fetching xarope data:", error);
       }
@@ -115,9 +113,7 @@ export default defineComponent({
     const fetchCapsulaData = async () => {
       try {
         const response = await axios.get('http://localhost:3000/capsula'); 
-        console.log('capsula:', response.data);
         capsulaData.value = response.data;
-        console.log(capsulaData.value);
       } catch (error) {
         console.error("Error fetching capsula data:", error);
       }
@@ -126,9 +122,7 @@ export default defineComponent({
     const fetchComprimidoData = async () => {
       try {
         const response = await axios.get('http://localhost:3000/comprimido'); 
-        console.log('comprimido:', response.data);
         comprimidoData.value = response.data;
-        console.log(comprimidoData.value);
       } catch (error) {
         console.error("Error fetching comprimido data:", error);
       }

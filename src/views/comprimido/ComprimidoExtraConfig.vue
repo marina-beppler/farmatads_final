@@ -1,10 +1,11 @@
 <script lang="ts">
-import { defineComponent, ref } from 'vue';
+import { defineComponent, onMounted, ref } from 'vue';
 import {
-  IonButton, IonButtons, IonHeader, IonIcon, IonPage, IonCard, IonContent, IonInput, IonItem, IonLabel, IonToolbar, IonImg
+  IonButton, IonButtons, IonHeader, IonIcon, IonPage, IonCard, IonContent, IonInput, IonItem, IonLabel, IonToolbar, IonImg, toastController
 } from '@ionic/vue';
-import { arrowBackOutline, arrowForwardOutline } from 'ionicons/icons';
+import { arrowBackOutline, arrowForwardOutline, qrCodeOutline } from 'ionicons/icons';
 import { useRouter } from 'vue-router';
+import axios from 'axios';
 
 export default defineComponent({
   name: 'ComprimidoExtraConfig',
@@ -26,6 +27,7 @@ export default defineComponent({
     const router = useRouter();
 
     const remedio = ref('');
+    const qtdComprimido = ref(0);
     const intervalo = ref(0);
     const selectedTime = ref('');
     const selectedColor = ref('vermelho');
@@ -37,6 +39,54 @@ export default defineComponent({
       { name: 'verde', hex: '#52C957' },
       { name: 'roxo', hex: '#B02AAA' }
     ];
+    
+    onMounted(() => {
+      const comprimidoConfig = JSON.parse(localStorage.getItem('comprimidoConfig') || '{}');
+      remedio.value = comprimidoConfig.remedio || '';
+      selectedTime.value = comprimidoConfig.selectedTime || '';
+      qtdComprimido.value = comprimidoConfig.qtdComprimido || 0;
+      intervalo.value = comprimidoConfig.intervaloTempo || 0; 
+      selectedColor.value = comprimidoConfig.cor || 'vermelho'; 
+    });
+
+    const presentToast = async (message: string) => {
+      const toast = await toastController.create({
+        message: message,
+        duration: 1500
+      });
+      toast.present();
+    };
+
+    const extractTime = (datetime: string): string => {
+      const date = new Date(datetime);
+      const hours = date.getHours().toString().padStart(2, '0');
+      const minutes = date.getMinutes().toString().padStart(2, '0');
+      return `${hours}:${minutes}:00`;
+    };
+
+    const saveComprimido = async () => {
+      const comprimidoConfig = JSON.parse(localStorage.getItem('comprimidoConfig') || '{}');
+      const data = {
+        tipo: 3,
+        nome: remedio.value || comprimidoConfig.remedio,
+        horaInicial: extractTime(selectedTime.value || comprimidoConfig.selectedTime),
+        intervaloTempo: intervalo.value,
+        cor: selectedColor.value,
+        qtdComprimido: comprimidoConfig.qtdComprimido
+      };
+
+      if (!data.nome || !data.horaInicial) {
+        presentToast('Por favor, preencha todos os campos obrigatórios.');
+        return;
+      }
+
+      try {
+        await axios.post('http://localhost:3000/comprimido', data);
+      } catch (error) {
+        console.error('Failed to save comprimido:', error);
+        presentToast('Erro ao salvar medicamento!');
+      }
+    }
 
     const incrementIntervalo = () => {
       intervalo.value++;
@@ -52,9 +102,16 @@ export default defineComponent({
       router.push("/comprimidoconfig");
     };
 
-    const goToNextPage = () => {
-      router.push("/remedios");
-      localStorage.removeItem('selectedMedicationType');
+    const goToNextPage = async () => {
+      try {
+        await saveComprimido();
+        localStorage.removeItem('selectedMedicationType');
+        localStorage.removeItem('comprimidoConfig');
+        router.push("/remedios");
+      } catch (error) {
+        console.error('Failed to save comprimido:', error);
+        presentToast('Erro ao salvar medicamento!');
+      }
     };
 
     const selectColor = (color: string) => {

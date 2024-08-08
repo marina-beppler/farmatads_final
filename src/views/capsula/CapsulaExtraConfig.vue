@@ -45,8 +45,8 @@ export default defineComponent({
       remedio.value = capsulaConfig.remedio || '';
       selectedTime.value = capsulaConfig.selectedTime || '';
       qtdCapsula.value = capsulaConfig.qtdCapsula || 0;
-      intervalo.value = capsulaConfig.intervaloTempo || 0; // Ensure intervalo is initialized
-      selectedColor.value = capsulaConfig.cor || 'vermelho'; // Ensure selectedColor is initialized
+      intervalo.value = capsulaConfig.intervaloTempo || 0; 
+      selectedColor.value = capsulaConfig.cor || 'vermelho'; 
     });
 
     const presentToast = async (message: string) => {

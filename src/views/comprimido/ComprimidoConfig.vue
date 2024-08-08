@@ -28,7 +28,7 @@ export default defineComponent({
     const selectedMedicationType = ref('');
 
     const remedio = ref('');
-    const quantidade = ref(0); 
+    const qtdComprimido = ref(0); 
     const selectedTime = ref('');
 
     onMounted(() => {
@@ -36,12 +36,12 @@ export default defineComponent({
     });
 
     const incrementQuantidade = () => {
-      quantidade.value++;
+      qtdComprimido.value++;
     };
 
     const decrementQuantidade = () => {
-      if (quantidade.value > 0) { 
-        quantidade.value--;
+      if (qtdComprimido.value > 0) { 
+        qtdComprimido.value--;
       }
     };
 
@@ -49,7 +49,16 @@ export default defineComponent({
       router.push("/remedioselect");
     };
 
+    const saveFormData = () => {
+      localStorage.setItem('comprimidoConfig', JSON.stringify({
+        remedio: remedio.value,
+        qtdComprimido: qtdComprimido.value,
+        selectedTime: selectedTime.value
+      }));
+    };
+
     const goToNextPage = () => {
+      saveFormData();
       router.push("/comprimidoextra");
       console.log(selectedMedicationType.value);
     };
@@ -58,7 +67,7 @@ export default defineComponent({
       arrowBackOutline,
       arrowForwardOutline,
       remedio,
-      quantidade,
+      qtdComprimido,
       selectedTime,
       incrementQuantidade,
       decrementQuantidade,
@@ -95,7 +104,7 @@ export default defineComponent({
                 <ion-label class="label-style">Quantidade:</ion-label>
                 <ion-item lines="none" class="counter-item">
                     <ion-button @click="decrementQuantidade">-</ion-button>
-                    <ion-input readonly :value="quantidade" style="text-align: center;"></ion-input>
+                    <ion-input readonly :value="qtdComprimido" style="text-align: center;"></ion-input>
                     <ion-button @click="incrementQuantidade">+</ion-button>
                 </ion-item>
                 <br>

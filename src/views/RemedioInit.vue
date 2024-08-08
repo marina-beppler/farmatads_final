@@ -22,6 +22,14 @@
               <img :src="`src/assets/capsula-${item.cor}.png`" :alt="item.cor" class="capsula-image" />
             </div>
           </div>
+          <div v-if="comprimidoData" class="comprimido-list">
+            <div v-for="item in comprimidoData" :key="item.id" :class="['comprimido-item', `comprimido-${item.cor}`]">
+              <div class="comprimido-info">
+                <h1 class="comprimido-name" :style="{ color: getColor(item.cor) }">{{ item.nome }}</h1>
+              </div>
+              <img :src="`src/assets/comprimido-${item.cor}.png`" :alt="item.cor" class="comprimido-image" />
+            </div>
+          </div>
           <div class="add-medication" @click="addRemedio">
             <ion-icon :icon="addOutline" size="large"></ion-icon>
           </div>
@@ -55,7 +63,8 @@ export default defineComponent({
   },
   setup() {
     const xaropeData = ref<any[]>([]);
-      const capsulaData = ref<any[]>([]);
+    const capsulaData = ref<any[]>([]);
+    const comprimidoData = ref<any[]>([]);
     const route = useRoute();
 
     const fetchXaropeData = async () => {
@@ -78,9 +87,20 @@ export default defineComponent({
       }
     };
 
+    const fetchComprimidoData = async () => {
+      try {
+        const response = await axios.get('http://localhost:3000/comprimido'); 
+        comprimidoData.value = response.data;
+        console.log(comprimidoData.value);
+      } catch (error) {
+        console.error("Error fetching comprimido data:", error);
+      }
+    };
+
     onMounted(() => {
       fetchXaropeData();
       fetchCapsulaData();
+      fetchComprimidoData();
     });
 
     
@@ -109,6 +129,7 @@ export default defineComponent({
       addRemedio,
       xaropeData,
       capsulaData,
+      comprimidoData,
       getColor
     };
   }
@@ -232,6 +253,39 @@ ion-content {
 }
 
 .capsula-name {
+  font-family: "Kufam";
+  font-size: 25px;
+  text-align: center;
+}
+
+.comprimido-list {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 20px; 
+}
+
+.comprimido-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 10px 0;
+}
+
+.comprimido-image {
+  width: 200px;
+  height: 200px;
+  margin-top: 10px; 
+}
+
+.comprimido-info {
+  display: flex;
+  flex-direction: column; 
+  align-items: center;
+}
+
+.comprimido-name {
   font-family: "Kufam";
   font-size: 25px;
   text-align: center;

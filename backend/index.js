@@ -154,6 +154,16 @@ app.post('/capsula', async (req, res) => {
   }
 });
 
+app.get('/comprimido', async (req, res) => {
+  try {
+    const comprimidoData = await pool.query('SELECT nome, cor FROM farmatads.comprimido'); 
+    res.json(comprimidoData.rows);
+  } catch (error) {
+    console.error('Error fetching comprimido data:', error.message);
+    res.status(500).json({ error: 'Server error' });
+  }
+});
+
 app.post('/comprimido', async (req, res) => {
   const { tipo, nome, horaInicial, intervaloTempo, cor, qtdComprimido } = req.body;
 

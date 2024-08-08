@@ -205,12 +205,12 @@ app.post('/capsula', async (req, res) => {
 
 app.put('/capsula/:id', async (req, res) => {
   const { id } = req.params;
-  const { nome, qtdcapsula, horainicial, cor } = req.body;
+  const { nome, qtdcapsula, horainicial, intervalotempo, cor } = req.body;
 
   try {
     await pool.query(
-      'UPDATE farmatads.capsula SET nome = $1, qtdcapsula = $2, horainicial = $3, cor = $4 WHERE id = $5',
-      [nome, qtdcapsula, horainicial, cor, id]
+      'UPDATE farmatads.capsula SET nome = $1, qtdcapsula = $2, horainicial = $3, cor = $4, intervalotempo = $5 WHERE id = $6',
+      [nome, qtdcapsula, horainicial, cor, intervalotempo, id]
     );
     res.status(200).send('Capsula updated successfully');
   } catch (error) {

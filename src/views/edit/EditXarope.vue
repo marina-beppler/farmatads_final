@@ -16,12 +16,6 @@
             <h3>Editar Xarope</h3>
           </ion-card>
           <p>Atualize os dados abaixo:</p>
-          <ion-card id="right">
-            <ion-button @click="saveXarope">
-              Salvar
-              <ion-icon slot="end" :icon="arrowForwardOutline"></ion-icon>
-            </ion-button>
-          </ion-card>
           <ion-label class="label-style">Nome:</ion-label>
           <ion-item lines="none">
             <ion-input v-model="remedio" />
@@ -54,14 +48,21 @@
           <ion-label class="label-style">Cor:</ion-label>
           <ion-item lines="none" class="color-selector">
             <div v-for="color in colors" :key="color.name"
-                 :style="{ backgroundColor: color.hex }"
-                 class="color-dot"
-                 :class="{ selected: selectedColor === color.name }"
-                 @click="selectColor(color.name)">
+              :style="{ backgroundColor: color.hex }"
+              class="color-dot"
+              :class="{ selected: selectedColor === color.name }"
+              @click="selectColor(color.name)">
             </div>
           </ion-item>
           <br />
           <ion-img id="xarope" :src="`src/assets/xarope-${selectedColor}.png`"/>
+          <br>
+          <ion-card id="right">
+            <ion-button @click="saveXarope">
+              Salvar
+              <ion-icon slot="end" :icon="arrowForwardOutline"></ion-icon>
+            </ion-button>
+          </ion-card>
         </ion-card>
       </ion-card>
     </ion-content>
@@ -241,7 +242,7 @@ p {
 }
 
 #background {
-  height: 95%;
+  min-height: 800px;
   background-color: #E7F7F4;
 }
 
@@ -268,7 +269,9 @@ h3 {
   background-color: #ffffff;
   padding: 10px;
   max-height: 100vh;
-  overflow-y: auto; 
+  overflow-y: auto;
+  min-height: 650px; 
+  height: auto;
 }
 
 
@@ -326,6 +329,7 @@ ion-toolbar {
 .color-selector {
   display: flex;
   flex-wrap: wrap;
+  justify-content: space-between; 
 }
 
 .color-dot {
@@ -340,6 +344,7 @@ ion-toolbar {
 .color-dot.selected {
   border: 2px solid black;
 }
+
 
 ion-datetime {
   --background: #E5F0F7 !important;

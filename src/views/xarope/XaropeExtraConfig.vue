@@ -1,11 +1,18 @@
 <script lang="ts">
-import { defineComponent, ref, onMounted } from 'vue';
 import {
-  IonButton, IonButtons, IonHeader, IonIcon, IonPage, IonCard, IonContent, IonInput, IonItem, IonLabel, IonToolbar, IonImg, toastController
+  IonButton, IonButtons,
+  IonCard, IonContent,
+  IonHeader, IonIcon,
+  IonImg,
+  IonInput, IonItem, IonLabel,
+  IonPage,
+  IonToolbar,
+  toastController
 } from '@ionic/vue';
-import { arrowBackOutline, arrowForwardOutline } from 'ionicons/icons';
-import { useRouter } from 'vue-router';
 import axios from 'axios';
+import { arrowBackOutline, arrowForwardOutline } from 'ionicons/icons';
+import { defineComponent, onMounted, ref } from 'vue';
+import { useRouter } from 'vue-router';
 
 export default defineComponent({
   name: 'XaropeExtraConfig',
@@ -248,6 +255,7 @@ ion-toolbar {
 .color-selector {
   display: flex;
   gap: 10px;
+  justify-content: space-between; 
 }
 
 .color-dot {

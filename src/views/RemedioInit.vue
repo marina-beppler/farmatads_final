@@ -6,46 +6,61 @@
     <ion-content>
       <ion-card id="background">
         <ion-card class="card">
-          <!-- Xarope List -->
+          <!-- Xarope -->
           <div v-if="xaropeData.length" class="xarope-list">
             <div v-for="item in xaropeData" :key="item.id" :class="['xarope-item', `xarope-${item.cor}`]">
               <div class="xarope-info">
                 <h1 class="xarope-name" :style="{ color: getColor(item.cor) }">{{ item.nome }}</h1>
               </div>
               <img :src="`src/assets/xarope-${item.cor}.png`" :alt="item.cor" class="xarope-image" />
-              <ion-button color="danger" @click="deleteItem('xarope', item.id)" class="delete-button">
-                <ion-icon :icon="trashOutline"></ion-icon>
-              </ion-button>
+              <div class="buttons-container">
+                <ion-button color="primary" @click="editItem('xarope', item)" class="edit-button">
+                  <ion-icon :icon="pencilOutline"></ion-icon>
+                </ion-button>
+                <ion-button color="danger" @click="deleteItem('xarope', item.id)" class="delete-button">
+                  <ion-icon :icon="trashOutline"></ion-icon>
+                </ion-button>
+              </div>
             </div>
           </div>
 
-          <!-- Capsula List -->
+          <!-- Capsula -->
           <div v-if="capsulaData.length" class="capsula-list">
             <div v-for="item in capsulaData" :key="item.id" :class="['capsula-item', `capsula-${item.cor}`]">
               <div class="capsula-info">
                 <h1 class="capsula-name" :style="{ color: getColor(item.cor) }">{{ item.nome }}</h1>
               </div>
               <img :src="`src/assets/capsula-${item.cor}.png`" :alt="item.cor" class="capsula-image" />
-              <ion-button color="danger" @click="deleteItem('capsula', item.id)" class="delete-button">
-                <ion-icon :icon="trashOutline"></ion-icon>
-              </ion-button>
+              <div class="buttons-container">
+                <ion-button color="primary" @click="editItem('capsula', item)" class="edit-button">
+                  <ion-icon :icon="pencilOutline"></ion-icon>
+                </ion-button>
+                <ion-button color="danger" @click="deleteItem('capsula', item.id)" class="delete-button">
+                  <ion-icon :icon="trashOutline"></ion-icon>
+                </ion-button>
+              </div>
             </div>
           </div>
 
-          <!-- Comprimido List -->
+          <!-- Comprimido -->
           <div v-if="comprimidoData.length" class="comprimido-list">
             <div v-for="item in comprimidoData" :key="item.id" :class="['comprimido-item', `comprimido-${item.cor}`]">
               <div class="comprimido-info">
                 <h1 class="comprimido-name" :style="{ color: getColor(item.cor) }">{{ item.nome }}</h1>
               </div>
               <img :src="`src/assets/comprimido-${item.cor}.png`" :alt="item.cor" class="comprimido-image" />
-              <ion-button color="danger" @click="deleteItem('comprimido', item.id)" class="delete-button">
-                <ion-icon :icon="trashOutline"></ion-icon>
-              </ion-button>
+              <div class="buttons-container">
+                <ion-button color="primary" @click="editItem('comprimido', item)" class="edit-button">
+                  <ion-icon :icon="pencilOutline"></ion-icon>
+                </ion-button>
+                <ion-button color="danger" @click="deleteItem('comprimido', item.id)" class="delete-button">
+                  <ion-icon :icon="trashOutline"></ion-icon>
+                </ion-button>
+              </div>
             </div>
           </div>
 
-          <!-- Add Medication Button -->
+          <!-- Botão adicionar -->
           <div class="add-medication" @click="addRemedio">
             <ion-icon :icon="addOutline" size="large"></ion-icon>
           </div>
@@ -57,16 +72,14 @@
   </ion-page>
 </template>
 
-
 <script lang="ts">
 import { defineComponent, ref, onMounted, watch } from 'vue';
 import { IonButton, IonHeader, IonIcon, IonPage, IonCard, IonContent } from '@ionic/vue';
 import NavigationMenu from '../views/components/NavigationMenu.vue';
-import { addOutline, trashOutline } from 'ionicons/icons';
+import { addOutline, pencilOutline, trashOutline } from 'ionicons/icons';
 import axios from 'axios';
 import router from '@/router';
 import { useRoute } from 'vue-router';
-import { alertController } from '@ionic/vue';
 
 export default defineComponent({
   name: 'RemedioInit',
@@ -89,6 +102,7 @@ export default defineComponent({
       try {
         const response = await axios.get('http://localhost:3000/xarope'); 
         xaropeData.value = response.data;
+        console.log(xaropeData.value);
       } catch (error) {
         console.error("Error fetching xarope data:", error);
       }
@@ -98,6 +112,7 @@ export default defineComponent({
       try {
         const response = await axios.get('http://localhost:3000/capsula'); 
         capsulaData.value = response.data;
+        console.log(capsulaData.value);
       } catch (error) {
         console.error("Error fetching capsula data:", error);
       }
@@ -107,6 +122,7 @@ export default defineComponent({
       try {
         const response = await axios.get('http://localhost:3000/comprimido'); 
         comprimidoData.value = response.data;
+        console.log(comprimidoData.value);
       } catch (error) {
         console.error("Error fetching comprimido data:", error);
       }
@@ -121,28 +137,28 @@ export default defineComponent({
     watch(route, () => {
       fetchXaropeData();
       fetchCapsulaData();
-      fetchComprimidoData();
     });
 
     const addRemedio = () => {
       router.push('/remedioselect');
+      console.log("Add new medication...");
     };
 
-    const getColor = (color: string) => {
-      const colorMap: Record<string, string> = {
-        roxo: '#6A0D91',
-        verde: '#228B22',
-        azul: '#0000FF',
-        vermelho: '#FF0000',
-        amarelo: '#FFDD54'
-      };
-      return colorMap[color] || '#000000';
+    const editItem = (type: string, item: any) => {
+      console.log(`Edit ${type}:`, item);
+      let path = '';
+      if (type === 'xarope') {
+        path = `/editxarope/${item.id}`;
+      } else if (type === 'capsula') {
+        path = `/editcapsula/${item.id}`;
+      } else if (type === 'comprimido') {
+        path = `/editcomprimido/${item.id}`;
+      }
+
+      router.push(path);
     };
 
     const deleteItem = async (type: string, id: number) => {
-      const confirm = await presentAlertConfirm(type, id);
-      if (!confirm) return;
-
       try {
         await axios.delete(`http://localhost:3000/${type}/${id}`);
         if (type === 'xarope') {
@@ -157,41 +173,28 @@ export default defineComponent({
       }
     };
 
-    const presentAlertConfirm = async (type: string, id: number) => {
-      const alert = await alertController.create({
-        header: 'Confirmar Exclusão',
-        message: 'Você tem certeza que deseja excluir este item?',
-        buttons: [
-          {
-            text: 'Cancelar',
-            role: 'cancel',
-            cssClass: 'secondary',
-            handler: () => {
-            }
-          },
-          {
-            text: 'Excluir',
-            handler: () => {
-              return true;
-            }
-          }
-        ]
-      });
-
-      await alert.present();
-      const { role } = await alert.onDidDismiss();
-      return role !== 'cancel';
+    const getColor = (color: string) => {
+      const colorMap: Record<string, string> = {
+        roxo: '#6A0D91',
+        verde: '#228B22',
+        azul: '#0000FF',
+        vermelho: '#FF0000',
+        amarelo: '#FFDD54'
+      };
+      return colorMap[color] || '#000000';
     };
 
     return {
       addOutline,
+      pencilOutline,
       trashOutline,
       addRemedio,
+      editItem,
+      deleteItem,
       xaropeData,
       capsulaData,
       comprimidoData,
-      getColor,
-      deleteItem
+      getColor
     };
   }
 });
@@ -265,9 +268,14 @@ h1 {
   text-align: center;
 }
 
-.delete-button {
+.buttons-container {
+  display: flex;
+  justify-content: center;
   margin-top: 10px;
-  align-self: center;
+}
+
+.edit-button, .delete-button {
+  margin: 0 5px;
 }
 
 .add-medication {
@@ -292,4 +300,5 @@ ion-content {
   --color: black;
 }
 </style>
+
 

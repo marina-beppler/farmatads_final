@@ -97,7 +97,7 @@ app.post('/send-code', async (req, res) => {
 
 app.get('/xarope', async (req, res) => {
   try {
-    const xaropeData = await pool.query('SELECT nome, cor FROM farmatads.xarope'); 
+    const xaropeData = await pool.query('SELECT id, nome, cor FROM farmatads.xarope'); 
     res.json(xaropeData.rows);
   } catch (error) {
     console.error('Error fetching xarope data:', error.message);
@@ -124,16 +124,32 @@ app.post('/xarope', async (req, res) => {
   }
 });
 
+app.delete('/xarope/:id', async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const deleteXarope = await pool.query('DELETE FROM farmatads.xarope WHERE id = $1 RETURNING *', [id]);
+
+    if (deleteXarope.rows.length === 0) {
+      return res.status(404).json({ error: 'Xarope não encontrado' });
+    }
+
+    res.json(deleteXarope.rows[0]);
+  } catch (error) {
+    console.error('Error deleting xarope:', error.message);
+    res.status(500).json({ error: 'Server error' });
+  }
+});
+
 app.get('/capsula', async (req, res) => {
   try {
-    const capsulaData = await pool.query('SELECT nome, cor FROM farmatads.capsula'); 
+    const capsulaData = await pool.query('SELECT id, nome, cor FROM farmatads.capsula'); 
     res.json(capsulaData.rows);
   } catch (error) {
     console.error('Error fetching capsula data:', error.message);
     res.status(500).json({ error: 'Server error' });
   }
 });
-
 
 app.post('/capsula', async (req, res) => {
   const { tipo, nome, horaInicial, intervaloTempo, cor, qtdCapsula } = req.body;
@@ -154,9 +170,26 @@ app.post('/capsula', async (req, res) => {
   }
 });
 
+app.delete('/capsula/:id', async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const deleteCapsula = await pool.query('DELETE FROM farmatads.capsula WHERE id = $1 RETURNING *', [id]);
+
+    if (deleteCapsula.rows.length === 0) {
+      return res.status(404).json({ error: 'Cápsula não encontrada' });
+    }
+
+    res.json(deleteCapsula.rows[0]);
+  } catch (error) {
+    console.error('Error deleting capsula:', error.message);
+    res.status(500).json({ error: 'Server error' });
+  }
+});
+
 app.get('/comprimido', async (req, res) => {
   try {
-    const comprimidoData = await pool.query('SELECT nome, cor FROM farmatads.comprimido'); 
+    const comprimidoData = await pool.query('SELECT id, nome, cor FROM farmatads.comprimido'); 
     res.json(comprimidoData.rows);
   } catch (error) {
     console.error('Error fetching comprimido data:', error.message);
@@ -179,6 +212,23 @@ app.post('/comprimido', async (req, res) => {
     res.json(newComprimido.rows[0]);
   } catch (error) {
     console.error(error.message);
+    res.status(500).json({ error: 'Server error' });
+  }
+});
+
+app.delete('/comprimido/:id', async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const deleteComprimido = await pool.query('DELETE FROM farmatads.comprimido WHERE id = $1 RETURNING *', [id]);
+
+    if (deleteComprimido.rows.length === 0) {
+      return res.status(404).json({ error: 'Comprimido não encontrado' });
+    }
+
+    res.json(deleteComprimido.rows[0]);
+  } catch (error) {
+    console.error('Error deleting comprimido:', error.message);
     res.status(500).json({ error: 'Server error' });
   }
 });

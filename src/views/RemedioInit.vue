@@ -6,30 +6,46 @@
     <ion-content>
       <ion-card id="background">
         <ion-card class="card">
-          <div v-if="xaropeData" class="xarope-list">
+          <!-- Xarope List -->
+          <div v-if="xaropeData.length" class="xarope-list">
             <div v-for="item in xaropeData" :key="item.id" :class="['xarope-item', `xarope-${item.cor}`]">
               <div class="xarope-info">
                 <h1 class="xarope-name" :style="{ color: getColor(item.cor) }">{{ item.nome }}</h1>
               </div>
               <img :src="`src/assets/xarope-${item.cor}.png`" :alt="item.cor" class="xarope-image" />
+              <ion-button color="danger" @click="deleteItem('xarope', item.id)" class="delete-button">
+                <ion-icon :icon="trashOutline"></ion-icon>
+              </ion-button>
             </div>
           </div>
-          <div v-if="capsulaData" class="capsula-list">
+
+          <!-- Capsula List -->
+          <div v-if="capsulaData.length" class="capsula-list">
             <div v-for="item in capsulaData" :key="item.id" :class="['capsula-item', `capsula-${item.cor}`]">
               <div class="capsula-info">
                 <h1 class="capsula-name" :style="{ color: getColor(item.cor) }">{{ item.nome }}</h1>
               </div>
               <img :src="`src/assets/capsula-${item.cor}.png`" :alt="item.cor" class="capsula-image" />
+              <ion-button color="danger" @click="deleteItem('capsula', item.id)" class="delete-button">
+                <ion-icon :icon="trashOutline"></ion-icon>
+              </ion-button>
             </div>
           </div>
-          <div v-if="comprimidoData" class="comprimido-list">
+
+          <!-- Comprimido List -->
+          <div v-if="comprimidoData.length" class="comprimido-list">
             <div v-for="item in comprimidoData" :key="item.id" :class="['comprimido-item', `comprimido-${item.cor}`]">
               <div class="comprimido-info">
                 <h1 class="comprimido-name" :style="{ color: getColor(item.cor) }">{{ item.nome }}</h1>
               </div>
               <img :src="`src/assets/comprimido-${item.cor}.png`" :alt="item.cor" class="comprimido-image" />
+              <ion-button color="danger" @click="deleteItem('comprimido', item.id)" class="delete-button">
+                <ion-icon :icon="trashOutline"></ion-icon>
+              </ion-button>
             </div>
           </div>
+
+          <!-- Add Medication Button -->
           <div class="add-medication" @click="addRemedio">
             <ion-icon :icon="addOutline" size="large"></ion-icon>
           </div>
@@ -41,14 +57,16 @@
   </ion-page>
 </template>
 
+
 <script lang="ts">
 import { defineComponent, ref, onMounted, watch } from 'vue';
 import { IonButton, IonHeader, IonIcon, IonPage, IonCard, IonContent } from '@ionic/vue';
 import NavigationMenu from '../views/components/NavigationMenu.vue';
-import { addOutline } from 'ionicons/icons';
+import { addOutline, trashOutline } from 'ionicons/icons';
 import axios from 'axios';
 import router from '@/router';
 import { useRoute } from 'vue-router';
+import { alertController } from '@ionic/vue';
 
 export default defineComponent({
   name: 'RemedioInit',
@@ -71,7 +89,6 @@ export default defineComponent({
       try {
         const response = await axios.get('http://localhost:3000/xarope'); 
         xaropeData.value = response.data;
-        console.log(xaropeData.value);
       } catch (error) {
         console.error("Error fetching xarope data:", error);
       }
@@ -81,7 +98,6 @@ export default defineComponent({
       try {
         const response = await axios.get('http://localhost:3000/capsula'); 
         capsulaData.value = response.data;
-        console.log(capsulaData.value);
       } catch (error) {
         console.error("Error fetching capsula data:", error);
       }
@@ -91,7 +107,6 @@ export default defineComponent({
       try {
         const response = await axios.get('http://localhost:3000/comprimido'); 
         comprimidoData.value = response.data;
-        console.log(comprimidoData.value);
       } catch (error) {
         console.error("Error fetching comprimido data:", error);
       }
@@ -103,15 +118,14 @@ export default defineComponent({
       fetchComprimidoData();
     });
 
-    
     watch(route, () => {
       fetchXaropeData();
       fetchCapsulaData();
+      fetchComprimidoData();
     });
 
     const addRemedio = () => {
       router.push('/remedioselect');
-      console.log("Add new medication...");
     };
 
     const getColor = (color: string) => {
@@ -119,18 +133,65 @@ export default defineComponent({
         roxo: '#6A0D91',
         verde: '#228B22',
         azul: '#0000FF',
-        vermelho: '#FF0000'
+        vermelho: '#FF0000',
+        amarelo: '#FFDD54'
       };
       return colorMap[color] || '#000000';
     };
 
+    const deleteItem = async (type: string, id: number) => {
+      const confirm = await presentAlertConfirm(type, id);
+      if (!confirm) return;
+
+      try {
+        await axios.delete(`http://localhost:3000/${type}/${id}`);
+        if (type === 'xarope') {
+          fetchXaropeData();
+        } else if (type === 'capsula') {
+          fetchCapsulaData();
+        } else if (type === 'comprimido') {
+          fetchComprimidoData();
+        }
+      } catch (error) {
+        console.error(`Error deleting ${type}:`, error);
+      }
+    };
+
+    const presentAlertConfirm = async (type: string, id: number) => {
+      const alert = await alertController.create({
+        header: 'Confirmar Exclusão',
+        message: 'Você tem certeza que deseja excluir este item?',
+        buttons: [
+          {
+            text: 'Cancelar',
+            role: 'cancel',
+            cssClass: 'secondary',
+            handler: () => {
+            }
+          },
+          {
+            text: 'Excluir',
+            handler: () => {
+              return true;
+            }
+          }
+        ]
+      });
+
+      await alert.present();
+      const { role } = await alert.onDidDismiss();
+      return role !== 'cancel';
+    };
+
     return {
       addOutline,
+      trashOutline,
       addRemedio,
       xaropeData,
       capsulaData,
       comprimidoData,
-      getColor
+      getColor,
+      deleteItem
     };
   }
 });
@@ -147,7 +208,7 @@ p {
   margin: 2%;
 }
 
-h1{
+h1 {
   font-family: "Kufam";
   font-size: 20px;
 }
@@ -171,7 +232,7 @@ h1{
   justify-content: center;
 }
 
-.xarope-list {
+.xarope-list, .capsula-list, .comprimido-list {
   width: 100%;
   display: flex;
   flex-direction: column;
@@ -179,29 +240,34 @@ h1{
   margin-bottom: 20px; 
 }
 
-.xarope-item {
+.xarope-item, .capsula-item, .comprimido-item {
   display: flex;
   flex-direction: column;
   align-items: center;
   margin: 10px 0;
 }
 
-.xarope-image {
+.xarope-image, .capsula-image, .comprimido-image {
   width: 200px;
   height: 200px;
   margin-top: 10px; 
 }
 
-.xarope-info {
+.xarope-info, .capsula-info, .comprimido-info {
   display: flex;
   flex-direction: column; 
   align-items: center;
 }
 
-.xarope-name {
+.xarope-name, .capsula-name, .comprimido-name {
   font-family: "Kufam";
   font-size: 25px;
   text-align: center;
+}
+
+.delete-button {
+  margin-top: 10px;
+  align-self: center;
 }
 
 .add-medication {
@@ -224,71 +290,6 @@ h1{
 ion-content {
   --background: #E5F0F7 !important;
   --color: black;
-}
-.capsula-list {
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  margin-bottom: 20px; 
-}
-
-.capsula-item {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  margin: 10px 0;
-}
-
-.capsula-image {
-  width: 200px;
-  height: 200px;
-  margin-top: 10px; 
-}
-
-.capsula-info {
-  display: flex;
-  flex-direction: column; 
-  align-items: center;
-}
-
-.capsula-name {
-  font-family: "Kufam";
-  font-size: 25px;
-  text-align: center;
-}
-
-.comprimido-list {
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  margin-bottom: 20px; 
-}
-
-.comprimido-item {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  margin: 10px 0;
-}
-
-.comprimido-image {
-  width: 200px;
-  height: 200px;
-  margin-top: 10px; 
-}
-
-.comprimido-info {
-  display: flex;
-  flex-direction: column; 
-  align-items: center;
-}
-
-.comprimido-name {
-  font-family: "Kufam";
-  font-size: 25px;
-  text-align: center;
 }
 </style>
 

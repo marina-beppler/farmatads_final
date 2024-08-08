@@ -124,6 +124,22 @@ app.post('/xarope', async (req, res) => {
   }
 });
 
+app.put('/xarope/:id', async (req, res) => {
+  const { id } = req.params;
+  const { nome, qtd, horaInicial, cor } = req.body;
+
+  try {
+    await pool.query(
+      'UPDATE xarope SET nome = $1, qtd = $2, horaInicial = $3, cor = $4 WHERE id = $5',
+      [nome, qtd, horaInicial, cor, id]
+    );
+    res.status(200).send('Xarope updated successfully');
+  } catch (error) {
+    console.error('Error updating xarope:', error);
+    res.status(500).send('Error updating xarope');
+  }
+});
+
 app.delete('/xarope/:id', async (req, res) => {
   const { id } = req.params;
 
@@ -167,6 +183,22 @@ app.post('/capsula', async (req, res) => {
   } catch (error) {
     console.error(error.message);
     res.status(500).json({ error: 'Server error' });
+  }
+});
+
+app.put('/capsula/:id', async (req, res) => {
+  const { id } = req.params;
+  const { nome, qtd, horaInicial, cor } = req.body;
+
+  try {
+    await pool.query(
+      'UPDATE capsula SET nome = $1, qtd = $2, horaInicial = $3, cor = $4 WHERE id = $5',
+      [nome, qtd, horaInicial, cor, id]
+    );
+    res.status(200).send('Capsula updated successfully');
+  } catch (error) {
+    console.error('Error updating capsula:', error);
+    res.status(500).send('Error updating capsula');
   }
 });
 
@@ -215,6 +247,23 @@ app.post('/comprimido', async (req, res) => {
     res.status(500).json({ error: 'Server error' });
   }
 });
+
+app.put('/comprimido/:id', async (req, res) => {
+  const { id } = req.params;
+  const { nome, qtd, horaInicial, cor } = req.body;
+
+  try {
+    await pool.query(
+      'UPDATE comprimido SET nome = $1, qtd = $2, horaInicial = $3, cor = $4 WHERE id = $5',
+      [nome, qtd, horaInicial, cor, id]
+    );
+    res.status(200).send('Comprimido updated successfully');
+  } catch (error) {
+    console.error('Error updating comprimido:', error);
+    res.status(500).send('Error updating comprimido');
+  }
+});
+
 
 app.delete('/comprimido/:id', async (req, res) => {
   const { id } = req.params;

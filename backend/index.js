@@ -110,7 +110,6 @@ app.get('/xarope/:id', async (req, res) => {
 
   try {
     const xaropeData = await pool.query('SELECT id, nome, cor, horainicial, intervalotempo, dosagem, qtddose FROM farmatads.xarope WHERE id = $1', [id]);
-    console.log ('xarope:', xaropeData.value);
     if (xaropeData.rows.length === 0) {
       return res.status(404).json({ error: 'Xarope não encontrado' });
     }
@@ -143,12 +142,12 @@ app.post('/xarope', async (req, res) => {
 
 app.put('/xarope/:id', async (req, res) => {
   const { id } = req.params;
-  const { nome, qtddose, dosagem, horainicial, cor } = req.body;
+  const { nome, qtddose, dosagem, horainicial, intervalotempo, cor } = req.body;
 
   try {
     await pool.query(
-      'UPDATE farmatads.xarope SET nome = $1, qtddose = $2, dosagem = $3, horainicial = $4, cor = $5 WHERE id = $6',
-      [nome, qtddose, dosagem, horainicial, cor, id]
+      'UPDATE farmatads.xarope SET nome = $1, qtddose = $2, dosagem = $3, horainicial = $4, cor = $5, intervalotempo = $6 WHERE id = $7',
+      [nome, qtddose, dosagem, horainicial, cor, intervalotempo, id]
     );
     res.status(200).send('Xarope updated successfully');
   } catch (error) {
@@ -206,12 +205,12 @@ app.post('/capsula', async (req, res) => {
 
 app.put('/capsula/:id', async (req, res) => {
   const { id } = req.params;
-  const { nome, qtd, horainicial, cor } = req.body;
+  const { nome, qtdcapsula, horainicial, cor } = req.body;
 
   try {
     await pool.query(
-      'UPDATE capsula SET nome = $1, qtd = $2, horainicial = $3, cor = $4 WHERE id = $5',
-      [nome, qtd, horainicial, cor, id]
+      'UPDATE farmatads.capsula SET nome = $1, qtdcapsula = $2, horainicial = $3, cor = $4 WHERE id = $5',
+      [nome, qtdcapsula, horainicial, cor, id]
     );
     res.status(200).send('Capsula updated successfully');
   } catch (error) {

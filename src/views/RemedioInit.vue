@@ -7,11 +7,11 @@
       <ion-card id="background">
         <ion-card class="card">
           <!-- Xarope -->
-          <div v-if="xaropeData.length" class="xarope-list">
-            <div v-for="item in xaropeData" :key="item.id" :class="['xarope-item', `xarope-${item.cor}`]">
+          <div v-if="xaropeDataWithTimes.length" class="xarope-list">
+            <div v-for="item in xaropeDataWithTimes" :key="item.id" :class="['xarope-item', `xarope-${item.cor}`]">
               <div class="xarope-info">
                 <h1 class="xarope-name" :style="{ color: getColor(item.cor) }">{{ item.nome }}</h1>
-                <p>Próximo às: {{ calculateProximoAs(item.horainicial, item.intervalotempo) }}</p>
+                <p>Próximo às: {{ item.proximoAs }}</p>
               </div>
               <img :src="`src/assets/xarope-${item.cor}.png`" :alt="item.cor" class="xarope-image" />
               <div class="buttons-container">
@@ -26,30 +26,30 @@
           </div>
 
           <!-- Capsula -->
-          <div v-if="capsulaData.length" class="capsula-list">
-            <div v-for="item in capsulaData" :key="item.id" :class="['capsula-item', `capsula-${item.cor}`]">
+          <div v-if="capsulaDataWithTimes.length" class="capsula-list">
+            <div v-for="item in capsulaDataWithTimes" :key="item.id" :class="['capsula-item', `capsula-${item.cor}`]">
               <div class="capsula-info">
                 <h1 class="capsula-name" :style="{ color: getColor(item.cor) }">{{ item.nome }}</h1>
-                <p>Próximo às: {{ calculateProximoAs(item.horainicial, item.intervalotempo) }}</p>
+                <p>Próximo às: {{ item.proximoAs }}</p>
               </div>
-            <img :src="`src/assets/capsula-${item.cor}.png`" :alt="item.cor" class="capsula-image" />
-            <div class="buttons-container">
-              <ion-button color="primary" @click="editItem('capsula', item)" class="edit-button">
-                <ion-icon :icon="pencilOutline"></ion-icon>
-              </ion-button>
-              <ion-button color="danger" @click="deleteItem('capsula', item.id)" class="delete-button">
-                <ion-icon :icon="trashOutline"></ion-icon>
-              </ion-button>
+              <img :src="`src/assets/capsula-${item.cor}.png`" :alt="item.cor" class="capsula-image" />
+              <div class="buttons-container">
+                <ion-button color="primary" @click="editItem('capsula', item)" class="edit-button">
+                  <ion-icon :icon="pencilOutline"></ion-icon>
+                </ion-button>
+                <ion-button color="danger" @click="deleteItem('capsula', item.id)" class="delete-button">
+                  <ion-icon :icon="trashOutline"></ion-icon>
+                </ion-button>
+              </div>
             </div>
           </div>
-        </div>
 
           <!-- Comprimido -->
-          <div v-if="comprimidoData.length" class="comprimido-list">
-            <div v-for="item in comprimidoData" :key="item.id" :class="['comprimido-item', `comprimido-${item.cor}`]">
+          <div v-if="comprimidoDataWithTimes.length" class="comprimido-list">
+            <div v-for="item in comprimidoDataWithTimes" :key="item.id" :class="['comprimido-item', `comprimido-${item.cor}`]">
               <div class="comprimido-info">
                 <h1 class="comprimido-name" :style="{ color: getColor(item.cor) }">{{ item.nome }}</h1>
-                <p>Próximo às: {{ calculateProximoAs(item.horainicial, item.intervalotempo) }}</p>
+                <p>Próximo às: {{ item.proximoAs }}</p>
               </div>
               <img :src="`src/assets/comprimido-${item.cor}.png`" :alt="item.cor" class="comprimido-image" />
               <div class="buttons-container">
@@ -75,12 +75,13 @@
   </ion-page>
 </template>
 
+
 <script lang="ts">
 import router from '@/router';
 import { IonButton, IonCard, IonContent, IonHeader, IonIcon, IonPage } from '@ionic/vue';
 import axios from 'axios';
 import { addOutline, pencilOutline, trashOutline } from 'ionicons/icons';
-import { defineComponent, onMounted, ref, watch } from 'vue';
+import { computed, defineComponent, onMounted, ref, watch } from 'vue';
 import { useRoute } from 'vue-router';
 import NavigationMenu from '../views/components/NavigationMenu.vue';
 
@@ -141,9 +142,9 @@ export default defineComponent({
       let newSeconds = seconds;
 
       if (hours <= 12) {
-        newHours = hours - intervalotempo;
-      } else {
         newHours = hours + intervalotempo;
+      } else {
+        newHours = hours - intervalotempo;
       }
 
       if (newHours >= 24) {
@@ -155,6 +156,11 @@ export default defineComponent({
       return `${newHours.toString().padStart(2, '0')}:${newMinutes.toString().padStart(2, '0')}:${newSeconds.toString().padStart(2, '0')}`;
     };
 
+    watch(route, () => {
+      fetchXaropeData();
+      fetchCapsulaData();
+      fetchComprimidoData();
+    });
 
     onMounted(() => {
       fetchXaropeData();
@@ -162,11 +168,26 @@ export default defineComponent({
       fetchComprimidoData();
     });
 
-    watch(route, () => {
-      fetchXaropeData();
-      fetchCapsulaData();
-      fetchComprimidoData();
-    });
+    const xaropeDataWithTimes = computed(() => 
+      xaropeData.value.map(item => ({
+        ...item,
+        proximoAs: calculateProximoAs(item.horainicial, item.intervalotempo)
+      }))
+    );
+
+    const capsulaDataWithTimes = computed(() => 
+      capsulaData.value.map(item => ({
+        ...item,
+        proximoAs: calculateProximoAs(item.horainicial, item.intervalotempo)
+      }))
+    );
+
+    const comprimidoDataWithTimes = computed(() => 
+      comprimidoData.value.map(item => ({
+        ...item,
+        proximoAs: calculateProximoAs(item.horainicial, item.intervalotempo)
+      }))
+    );
 
     const addRemedio = () => {
       router.push('/remedioselect');
@@ -220,10 +241,9 @@ export default defineComponent({
       addRemedio,
       editItem,
       deleteItem,
-      xaropeData,
-      capsulaData,
-      comprimidoData,
-      calculateProximoAs,
+      xaropeDataWithTimes,
+      capsulaDataWithTimes,
+      comprimidoDataWithTimes,
       getColor
     };
   }

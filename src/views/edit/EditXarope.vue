@@ -155,15 +155,15 @@ export default defineComponent({
       }
     };
 
-    const incrementIntervalo = () => {
-      intervalo.value++;
-    };
+  const incrementIntervalo = () => {
+    intervalo.value++;
+  };
 
-    const decrementIntervalo = () => {
-      if (intervalo.value > 0) {
-        intervalo.value--;
-      }
-    };
+  const decrementIntervalo = () => {
+    if (intervalo.value > 0) {
+      intervalo.value--;
+    }
+  };
 
     const selectColor = (color: string) => {
       selectedColor.value = color;
@@ -185,7 +185,7 @@ export default defineComponent({
       const data = {
         nome: remedio.value,
         horainicial: extractTime(selectedTime.value), 
-        intervaloTempo: intervalo.value,
+        intervalotempo: intervalo.value,
         cor: selectedColor.value,
         dosagem: dose.value,
         qtddose: qtddose.value
@@ -202,7 +202,7 @@ export default defineComponent({
     const convertToDatetimeFormat = (time: string): string => {
       if (!time) return '';
       const [hours, minutes] = time.split(':');
-      return `1970-01-01T${hours}:${minutes}:00`;
+      return `2024-01-01T${hours}:${minutes}:00`;
     };
 
     return {

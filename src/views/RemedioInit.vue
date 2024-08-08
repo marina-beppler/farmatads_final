@@ -11,6 +11,7 @@
             <div v-for="item in xaropeData" :key="item.id" :class="['xarope-item', `xarope-${item.cor}`]">
               <div class="xarope-info">
                 <h1 class="xarope-name" :style="{ color: getColor(item.cor) }">{{ item.nome }}</h1>
+                <p>Próximo às: {{ calculateProximoAs(item.horainicial, item.intervalotempo) }}</p>
               </div>
               <img :src="`src/assets/xarope-${item.cor}.png`" :alt="item.cor" class="xarope-image" />
               <div class="buttons-container">
@@ -29,24 +30,26 @@
             <div v-for="item in capsulaData" :key="item.id" :class="['capsula-item', `capsula-${item.cor}`]">
               <div class="capsula-info">
                 <h1 class="capsula-name" :style="{ color: getColor(item.cor) }">{{ item.nome }}</h1>
+                <p>Próximo às: {{ calculateProximoAs(item.horainicial, item.intervalotempo) }}</p>
               </div>
-              <img :src="`src/assets/capsula-${item.cor}.png`" :alt="item.cor" class="capsula-image" />
-              <div class="buttons-container">
-                <ion-button color="primary" @click="editItem('capsula', item)" class="edit-button">
-                  <ion-icon :icon="pencilOutline"></ion-icon>
-                </ion-button>
-                <ion-button color="danger" @click="deleteItem('capsula', item.id)" class="delete-button">
-                  <ion-icon :icon="trashOutline"></ion-icon>
-                </ion-button>
-              </div>
+            <img :src="`src/assets/capsula-${item.cor}.png`" :alt="item.cor" class="capsula-image" />
+            <div class="buttons-container">
+              <ion-button color="primary" @click="editItem('capsula', item)" class="edit-button">
+                <ion-icon :icon="pencilOutline"></ion-icon>
+              </ion-button>
+              <ion-button color="danger" @click="deleteItem('capsula', item.id)" class="delete-button">
+                <ion-icon :icon="trashOutline"></ion-icon>
+              </ion-button>
             </div>
           </div>
+        </div>
 
           <!-- Comprimido -->
           <div v-if="comprimidoData.length" class="comprimido-list">
             <div v-for="item in comprimidoData" :key="item.id" :class="['comprimido-item', `comprimido-${item.cor}`]">
               <div class="comprimido-info">
                 <h1 class="comprimido-name" :style="{ color: getColor(item.cor) }">{{ item.nome }}</h1>
+                <p>Próximo às: {{ calculateProximoAs(item.horainicial, item.intervalotempo) }}</p>
               </div>
               <img :src="`src/assets/comprimido-${item.cor}.png`" :alt="item.cor" class="comprimido-image" />
               <div class="buttons-container">
@@ -73,13 +76,13 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, onMounted, watch } from 'vue';
-import { IonButton, IonHeader, IonIcon, IonPage, IonCard, IonContent } from '@ionic/vue';
-import NavigationMenu from '../views/components/NavigationMenu.vue';
-import { addOutline, pencilOutline, trashOutline } from 'ionicons/icons';
-import axios from 'axios';
 import router from '@/router';
+import { IonButton, IonCard, IonContent, IonHeader, IonIcon, IonPage } from '@ionic/vue';
+import axios from 'axios';
+import { addOutline, pencilOutline, trashOutline } from 'ionicons/icons';
+import { defineComponent, onMounted, ref, watch } from 'vue';
 import { useRoute } from 'vue-router';
+import NavigationMenu from '../views/components/NavigationMenu.vue';
 
 export default defineComponent({
   name: 'RemedioInit',
@@ -101,6 +104,7 @@ export default defineComponent({
     const fetchXaropeData = async () => {
       try {
         const response = await axios.get('http://localhost:3000/xarope'); 
+        console.log('xarope:', response.data);
         xaropeData.value = response.data;
         console.log(xaropeData.value);
       } catch (error) {
@@ -111,6 +115,7 @@ export default defineComponent({
     const fetchCapsulaData = async () => {
       try {
         const response = await axios.get('http://localhost:3000/capsula'); 
+        console.log('capsula:', response.data);
         capsulaData.value = response.data;
         console.log(capsulaData.value);
       } catch (error) {
@@ -121,12 +126,41 @@ export default defineComponent({
     const fetchComprimidoData = async () => {
       try {
         const response = await axios.get('http://localhost:3000/comprimido'); 
+        console.log('comprimido:', response.data);
         comprimidoData.value = response.data;
         console.log(comprimidoData.value);
       } catch (error) {
         console.error("Error fetching comprimido data:", error);
       }
     };
+
+    const calculateProximoAs = (horainicial: string | undefined, intervalotempo: number | undefined) => {
+      if (!horainicial || intervalotempo === undefined) {
+        console.error("horainicial or intervalotempo is undefined");
+        return "00:00:00"; 
+      }
+
+      const [hours, minutes, seconds] = horainicial.split(':').map(Number);
+
+      let newHours = hours;
+      let newMinutes = minutes;
+      let newSeconds = seconds;
+
+      if (hours <= 12) {
+        newHours = hours - intervalotempo;
+      } else {
+        newHours = hours + intervalotempo;
+      }
+
+      if (newHours >= 24) {
+        newHours -= 24;
+      } else if (newHours < 0) {
+        newHours += 24;
+      }
+
+      return `${newHours.toString().padStart(2, '0')}:${newMinutes.toString().padStart(2, '0')}:${newSeconds.toString().padStart(2, '0')}`;
+    };
+
 
     onMounted(() => {
       fetchXaropeData();
@@ -137,6 +171,7 @@ export default defineComponent({
     watch(route, () => {
       fetchXaropeData();
       fetchCapsulaData();
+      fetchComprimidoData();
     });
 
     const addRemedio = () => {
@@ -194,6 +229,7 @@ export default defineComponent({
       xaropeData,
       capsulaData,
       comprimidoData,
+      calculateProximoAs,
       getColor
     };
   }

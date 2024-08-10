@@ -22,6 +22,7 @@ $RECYCLE.BIN/
 log.txt
 npm-debug.log*
 
+.vscode
 /.idea
 /.ionic
 .ionicons/

@@ -5,7 +5,6 @@ import {
 } from '@ionic/vue';
 import { arrowBackOutline, arrowForwardOutline } from 'ionicons/icons';
 import { useRouter } from 'vue-router';
-import router from '@/router';
 
 export default defineComponent({
   name: 'XaropeConfig',
@@ -27,7 +26,6 @@ export default defineComponent({
     const router = useRouter();
 
     const selectedMedicationType = ref('');
-
     const remedio = ref('');
     const dose = ref(0);
     const qtdDoses = ref(0);
@@ -61,7 +59,17 @@ export default defineComponent({
       router.push("/remedioselect");
     };
 
+    const saveFormData = () => {
+      localStorage.setItem('xaropeConfig', JSON.stringify({
+        remedio: remedio.value,
+        dose: dose.value,
+        qtdDoses: qtdDoses.value,
+        selectedTime: selectedTime.value
+      }));
+    };
+
     const goToNextPage = () => {
+      saveFormData();
       router.push("/xaropeextra");
       console.log(selectedMedicationType.value);
     };
@@ -83,6 +91,7 @@ export default defineComponent({
   }
 });
 </script>
+
 
 <template>
 <ion-page>

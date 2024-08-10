@@ -21,17 +21,17 @@ export default defineComponent({
     const router = useRouter();
     
     const selectCapsula = () => {
-    localStorage.setItem('selectedMedicationType', 'capsula');
+    localStorage.setItem('selectedMedicationType', '2');
       router.push('/capsulaconfig');
     };
 
     const selectComprimido = () => {
-    localStorage.setItem('selectedMedicationType', 'comprimido');
+    localStorage.setItem('selectedMedicationType', '3');
       router.push('/comprimidoconfig');
     };
 
     const selectXarope = () => {
-    localStorage.setItem('selectedMedicationType', 'xarope');
+    localStorage.setItem('selectedMedicationType', '1');
       router.push('/xaropeconfig');
     };
 

@@ -1,10 +1,11 @@
 <script lang="ts">
-import { defineComponent, ref } from 'vue';
+  import { defineComponent, onMounted, ref } from 'vue';
 import {
-  IonButton, IonButtons, IonHeader, IonIcon, IonPage, IonCard, IonContent, IonInput, IonItem, IonLabel, IonToolbar, IonImg
+  IonButton, IonButtons, IonHeader, IonIcon, IonPage, IonCard, IonContent, IonInput, IonItem, IonLabel, IonToolbar, IonImg, toastController
 } from '@ionic/vue';
 import { arrowBackOutline, arrowForwardOutline } from 'ionicons/icons';
 import { useRouter } from 'vue-router';
+import axios from 'axios';
 
 export default defineComponent({
   name: 'CapsulaExtraConfig',
@@ -29,6 +30,7 @@ export default defineComponent({
     const intervalo = ref(0);
     const selectedTime = ref('');
     const selectedColor = ref('vermelho');
+    const qtdCapsula = ref(0);
 
     const colors = [
       { name: 'azul', hex: '#549EC9' },
@@ -37,6 +39,23 @@ export default defineComponent({
       { name: 'verde', hex: '#52C957' },
       { name: 'roxo', hex: '#B02AAA' }
     ];
+
+    onMounted(() => {
+      const capsulaConfig = JSON.parse(localStorage.getItem('capsulaConfig') || '{}');
+      remedio.value = capsulaConfig.remedio || '';
+      selectedTime.value = capsulaConfig.selectedTime || '';
+      qtdCapsula.value = capsulaConfig.qtdCapsula || 0;
+      intervalo.value = capsulaConfig.intervaloTempo || 0; 
+      selectedColor.value = capsulaConfig.cor || 'vermelho'; 
+    });
+
+    const presentToast = async (message: string) => {
+      const toast = await toastController.create({
+        message: message,
+        duration: 1500
+      });
+      toast.present();
+    };
 
     const incrementIntervalo = () => {
       intervalo.value++;
@@ -52,9 +71,47 @@ export default defineComponent({
       router.push("/capsulaconfig");
     };
 
-    const goToNextPage = () => {
-      router.push("/remedios");
-      localStorage.removeItem('selectedMedicationType');
+    const extractTime = (datetime: string): string => {
+      const date = new Date(datetime);
+      const hours = date.getHours().toString().padStart(2, '0');
+      const minutes = date.getMinutes().toString().padStart(2, '0');
+      return `${hours}:${minutes}:00`;
+    };
+
+    const saveCapsula = async () => {
+      const capsulaConfig = JSON.parse(localStorage.getItem('capsulaConfig') || '{}');
+      const data = {
+        tipo: 2,
+        nome: remedio.value || capsulaConfig.remedio,
+        horaInicial: extractTime(selectedTime.value || capsulaConfig.selectedTime),
+        intervaloTempo: intervalo.value,
+        cor: selectedColor.value,
+        qtdCapsula: capsulaConfig.qtdCapsula
+      };
+
+      if (!data.nome || !data.horaInicial) {
+        presentToast('Por favor, preencha todos os campos obrigatórios.');
+        return;
+      }
+
+      try {
+        await axios.post('http://localhost:3000/capsula', data);
+      } catch (error) {
+        console.error('Failed to save capsula:', error);
+        presentToast('Erro ao salvar medicamento!');
+      }
+    }
+
+    const goToNextPage = async () => {
+      try {
+        await saveCapsula();
+        localStorage.removeItem('selectedMedicationType');
+        localStorage.removeItem('capsulaConfig');
+        router.push("/remedios");
+      } catch (error) {
+        console.error('Failed to save capsula:', error);
+        presentToast('Erro ao salvar medicamento!');
+      }
     };
 
     const selectColor = (color: string) => {
@@ -77,6 +134,7 @@ export default defineComponent({
     };
   }
 });
+
 </script>
 
 <template>

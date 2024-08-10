@@ -24,7 +24,7 @@ cd farmatads
 #### 1 - CRIAR DATABASE
 
 ```
-CREATE database Farmatads;
+CREATE database farmatads;
 ```
 
 **CERTIFIQUE-SE QUE ESTÁ CONECTADA NESSA DATABASE ANTES DE RODAR QUALQUER OUTRO COMANDO**

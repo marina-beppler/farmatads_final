@@ -246,6 +246,24 @@ app.get('/comprimido', async (req, res) => {
   }
 });
 
+app.get('/comprimido/:id', async (req, res) => {
+  const { id } = req.params;
+  try {
+    const comprimidoData = await pool.query(
+      'SELECT id, nome, cor, horainicial, intervalotempo, qtdcomprimido FROM farmatads.comprimido WHERE id = $1',
+      [id]
+    );
+    if (comprimidoData.rows.length > 0) {
+      res.json(comprimidoData.rows[0]);
+    } else {
+      res.status(404).json({ error: 'Comprimido not found' });
+    }
+  } catch (error) {
+    console.error('Error fetching comprimido data:', error.message);
+    res.status(500).json({ error: 'Server error' });
+  }
+});
+
 
 app.post('/comprimido', async (req, res) => {
   const { tipo, nome, horaInicial, intervaloTempo, cor, qtdComprimido } = req.body;
@@ -268,12 +286,12 @@ app.post('/comprimido', async (req, res) => {
 
 app.put('/comprimido/:id', async (req, res) => {
   const { id } = req.params;
-  const { nome, qtd, horainicial, cor } = req.body;
+  const { nome, horainicial, intervalotempo, cor, qtdcomprimido } = req.body;
 
   try {
     await pool.query(
-      'UPDATE comprimido SET nome = $1, qtd = $2, horainicial = $3, cor = $4 WHERE id = $5',
-      [nome, qtd, horainicial, cor, id]
+      'UPDATE farmatads.comprimido SET nome = $1, horainicial = $2, intervalotempo = $3, cor = $4, qtdcomprimido = $5 WHERE id = $6',
+      [nome, horainicial, intervalotempo, cor, qtdcomprimido, id]
     );
     res.status(200).send('Comprimido updated successfully');
   } catch (error) {
@@ -281,7 +299,6 @@ app.put('/comprimido/:id', async (req, res) => {
     res.status(500).send('Error updating comprimido');
   }
 });
-
 
 app.delete('/comprimido/:id', async (req, res) => {
   const { id } = req.params;

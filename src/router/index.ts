@@ -1,3 +1,4 @@
+import EditComprimido from '@/views/edit/EditComprimido.vue';
 import { createRouter, createWebHistory } from '@ionic/vue-router';
 import { RouteRecordRaw } from 'vue-router';
 import { isAuthenticated } from '../../backend/auth';
@@ -112,6 +113,11 @@ const routes: Array<RouteRecordRaw> = [
     name: 'ComprimidoExtraConfig',
     component: ComprimidoExtraConfig,
     meta: { requiresAuth: true }
+  },
+  {
+    path: '/editcomprimido/:id',
+    name: 'EditComprimido',
+    component: EditComprimido
   },
 ];
 

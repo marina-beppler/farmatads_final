@@ -183,6 +183,24 @@ app.get('/capsula', async (req, res) => {
   }
 });
 
+app.get('/capsula/:id', async (req, res) => {
+  const { id } = req.params;
+  try {
+    const capsulaData = await pool.query(
+      'SELECT id, nome, cor, horainicial, intervalotempo, qtdcapsula FROM farmatads.capsula WHERE id = $1',
+      [id]
+    );
+    if (capsulaData.rows.length > 0) {
+      res.json(capsulaData.rows[0]);
+    } else {
+      res.status(404).json({ error: 'Comprimido not found' });
+    }
+  } catch (error) {
+    console.error('Error fetching capsula data:', error.message);
+    res.status(500).json({ error: 'Server error' });
+  }
+});
+
 
 app.post('/capsula', async (req, res) => {
   const { tipo, nome, horaInicial, intervaloTempo, cor, qtdCapsula } = req.body;
@@ -263,7 +281,6 @@ app.get('/comprimido/:id', async (req, res) => {
     res.status(500).json({ error: 'Server error' });
   }
 });
-
 
 app.post('/comprimido', async (req, res) => {
   const { tipo, nome, horaInicial, intervaloTempo, cor, qtdComprimido } = req.body;

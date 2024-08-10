@@ -1,3 +1,4 @@
+import EditCapsula from '@/views/edit/EditCapsula.vue';
 import EditComprimido from '@/views/edit/EditComprimido.vue';
 import { createRouter, createWebHistory } from '@ionic/vue-router';
 import { RouteRecordRaw } from 'vue-router';
@@ -101,6 +102,11 @@ const routes: Array<RouteRecordRaw> = [
     name: 'CapsulaExtraConfig',
     component: CapsulaExtraConfig,
     meta: { requiresAuth: true }
+  },
+  {
+    path: '/editcapsula/:id',
+    name: 'EditCapsula',
+    component: EditCapsula
   },
   {
     path: '/comprimidoconfig',

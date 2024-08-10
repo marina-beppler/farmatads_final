@@ -129,46 +129,37 @@ export default defineComponent({
       }
     };
 
-    const calculateProximoAs = (horainicial: string | undefined, intervalotempo: number | undefined) => {
-    if (!horainicial || intervalotempo === undefined) {
-      console.error("horainicial or intervalotempo is undefined");
-      return "00:00:00";
+    const calculateProximoAs = (horainicial: string | undefined, intervaloTempo: number | undefined): string => {
+  if (!horainicial || intervaloTempo === undefined) {
+    console.error("horainicial or intervaloTempo is undefined");
+    return "00:00:00";
+  }
+
+  const horaAtual = new Date();
+
+  const [hours, minutes] = horainicial.split(':').map(Number);
+  const horaInicial = new Date();
+  horaInicial.setHours(hours, minutes, 0, 0);
+
+  // Converter intervaloTempo de horas para milisegundos
+  const intervaloEmMilissegundos = intervaloTempo * 60 * 60 * 1000;
+
+  let proximoAs = new Date(horaInicial);
+
+  if (horaAtual > horaInicial) {
+    while (proximoAs <= horaAtual) {
+      proximoAs = new Date(proximoAs.getTime() + intervaloEmMilissegundos);
     }
+  } else {
+    proximoAs = new Date(horaInicial);
+  }
 
-    const [initialHours, initialMinutes, initialSeconds] = horainicial.split(':').map(Number);
+  const hoursStr = proximoAs.getHours().toString().padStart(2, '0');
+  const minutesStr = proximoAs.getMinutes().toString().padStart(2, '0');
+  const secondsStr = proximoAs.getSeconds().toString().padStart(2, '0');
 
-    const initialDate = new Date();
-    initialDate.setHours(initialHours, initialMinutes, initialSeconds, 0);
-
-    initialDate.setHours(initialDate.getHours() + intervalotempo);
-
-    const calculatedHours = initialDate.getHours();
-    const calculatedMinutes = initialDate.getMinutes();
-    const calculatedSeconds = initialDate.getSeconds();
-
-    const calculatedTimeFormatted = `${calculatedHours.toString().padStart(2, '0')}:${calculatedMinutes.toString().padStart(2, '0')}:${calculatedSeconds.toString().padStart(2, '0')}`;
-    console.log("Calculated Proximo As:", calculatedTimeFormatted);
-
-    const currentTime = new Date();
-    const currentHours = currentTime.getHours();
-    const currentMinutes = currentTime.getMinutes();
-    const currentSeconds = currentTime.getSeconds();
-
-    const currentTimeFormatted = `${currentHours.toString().padStart(2, '0')}:${currentMinutes.toString().padStart(2, '0')}:${currentSeconds.toString().padStart(2, '0')}`;
-    console.log("Current Time:", currentTimeFormatted);
-
-    const currentDate = new Date();
-    currentDate.setHours(currentHours, currentMinutes, currentSeconds, 0);
-
-    const calculatedDate = new Date();
-    calculatedDate.setHours(calculatedHours, calculatedMinutes, calculatedSeconds, 0);
-
-    if (currentDate > calculatedDate) {
-      return horainicial; 
-    }
-
-    return calculatedTimeFormatted;
-  };
+  return `${hoursStr}:${minutesStr}:${secondsStr}`;
+};
 
     watch(route, () => {
       fetchXaropeData();

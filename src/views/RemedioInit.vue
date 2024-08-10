@@ -130,31 +130,45 @@ export default defineComponent({
     };
 
     const calculateProximoAs = (horainicial: string | undefined, intervalotempo: number | undefined) => {
-      if (!horainicial || intervalotempo === undefined) {
-        console.error("horainicial or intervalotempo is undefined");
-        return "00:00:00"; 
-      }
+    if (!horainicial || intervalotempo === undefined) {
+      console.error("horainicial or intervalotempo is undefined");
+      return "00:00:00";
+    }
 
-      const [hours, minutes, seconds] = horainicial.split(':').map(Number);
+    const [initialHours, initialMinutes, initialSeconds] = horainicial.split(':').map(Number);
 
-      let newHours = hours;
-      let newMinutes = minutes;
-      let newSeconds = seconds;
+    const initialDate = new Date();
+    initialDate.setHours(initialHours, initialMinutes, initialSeconds, 0);
 
-      if (hours <= 12) {
-        newHours = hours + intervalotempo;
-      } else {
-        newHours = hours - intervalotempo;
-      }
+    initialDate.setHours(initialDate.getHours() + intervalotempo);
 
-      if (newHours >= 24) {
-        newHours -= 24;
-      } else if (newHours < 0) {
-        newHours += 24;
-      }
+    const calculatedHours = initialDate.getHours();
+    const calculatedMinutes = initialDate.getMinutes();
+    const calculatedSeconds = initialDate.getSeconds();
 
-      return `${newHours.toString().padStart(2, '0')}:${newMinutes.toString().padStart(2, '0')}:${newSeconds.toString().padStart(2, '0')}`;
-    };
+    const calculatedTimeFormatted = `${calculatedHours.toString().padStart(2, '0')}:${calculatedMinutes.toString().padStart(2, '0')}:${calculatedSeconds.toString().padStart(2, '0')}`;
+    console.log("Calculated Proximo As:", calculatedTimeFormatted);
+
+    const currentTime = new Date();
+    const currentHours = currentTime.getHours();
+    const currentMinutes = currentTime.getMinutes();
+    const currentSeconds = currentTime.getSeconds();
+
+    const currentTimeFormatted = `${currentHours.toString().padStart(2, '0')}:${currentMinutes.toString().padStart(2, '0')}:${currentSeconds.toString().padStart(2, '0')}`;
+    console.log("Current Time:", currentTimeFormatted);
+
+    const currentDate = new Date();
+    currentDate.setHours(currentHours, currentMinutes, currentSeconds, 0);
+
+    const calculatedDate = new Date();
+    calculatedDate.setHours(calculatedHours, calculatedMinutes, calculatedSeconds, 0);
+
+    if (currentDate > calculatedDate) {
+      return horainicial; 
+    }
+
+    return calculatedTimeFormatted;
+  };
 
     watch(route, () => {
       fetchXaropeData();

@@ -185,16 +185,16 @@ app.get('/capsula', async (req, res) => {
 
 
 app.post('/capsula', async (req, res) => {
-  const { tipo, nome, horainicial, intervalotempo, cor, qtdCapsula } = req.body;
+  const { tipo, nome, horaInicial, intervaloTempo, cor, qtdCapsula } = req.body;
 
-  if (!tipo || !nome || !horainicial || !intervalotempo || !cor || !qtdCapsula) {
+  if (!tipo || !nome || !horaInicial || !intervaloTempo || !cor || !qtdCapsula) {
     return res.status(400).json({ error: 'Todos os campos são obrigatórios!' });
   }
 
   try {
     const newCapsula = await pool.query(
-      'INSERT INTO farmatads.capsula (tipo, nome, horainicial, intervalotempo, cor, qtdCapsula) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *',
-      [tipo, nome, horainicial, intervalotempo, cor, qtdCapsula]
+      'INSERT INTO farmatads.capsula (tipo, nome, horaInicial, intervaloTempo, cor, qtdCapsula) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *',
+      [tipo, nome, horaInicial, intervaloTempo, cor, qtdCapsula]
     );
     res.json(newCapsula.rows[0]);
   } catch (error) {
@@ -248,16 +248,16 @@ app.get('/comprimido', async (req, res) => {
 
 
 app.post('/comprimido', async (req, res) => {
-  const { tipo, nome, horainicial, intervalotempo, cor, qtdComprimido } = req.body;
+  const { tipo, nome, horaInicial, intervaloTempo, cor, qtdComprimido } = req.body;
 
-  if (!tipo || !nome || !horainicial || !intervalotempo || !cor || !qtdComprimido) {
+  if (!tipo || !nome || !horaInicial || !intervaloTempo || !cor || !qtdComprimido) {
     return res.status(400).json({ error: 'Todos os campos são obrigatórios!' });
   }
 
   try {
     const newComprimido = await pool.query(
-      'INSERT INTO farmatads.comprimido (tipo, nome, horainicial, intervalotempo, cor, qtdComprimido) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *',
-      [tipo, nome, horainicial, intervalotempo, cor, qtdComprimido]
+      'INSERT INTO farmatads.comprimido (tipo, nome, horaInicial, intervaloTempo, cor, qtdComprimido) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *',
+      [tipo, nome, horaInicial, intervaloTempo, cor, qtdComprimido]
     );
     res.json(newComprimido.rows[0]);
   } catch (error) {

@@ -52,6 +52,7 @@ CREATE TABLE farmatads.tipoMed (
 
 CREATE TABLE farmatads.medicamento (
     id SERIAL PRIMARY KEY,
+    usuario INTEGER REFERENCES farmatads.users(id),
     tipo INTEGER REFERENCES farmatads.tipoMed(id),
     nome VARCHAR(100) NOT NULL,
     horaInicial TIME NOT NULL,

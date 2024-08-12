@@ -7,7 +7,7 @@
       <ion-card id="background">
         <ion-card class="card">
           <h1>Remédios</h1>
-          <p>Para registrar um medicamento tomado, clicar nele para registar o horário. Para adicionar novos medicamentos, dirija-se até o fim da página</p>
+          <p>Clique em um medicamento tomado para registar o horário. Para adicionar novos medicamentos, dirija-se até o fim da página</p>
           <!-- Xarope -->
           <div v-if="xaropeDataWithTimes.length" class="xarope-list">
             <div v-for="item in xaropeDataWithTimes" :key="item.id" :class="['xarope-item', `xarope-${item.cor}`]" @click="openModal('xarope', item)">
@@ -77,7 +77,6 @@
         </ion-card>
       </ion-card>
 
-      <!-- Medication Modal -->
       <RemedioModal
         :isOpen="isModalOpen"
         :medicationType="selectedMedicationType"
@@ -153,8 +152,6 @@ export default defineComponent({
       }
     };
 
-    
-
     const calculateProximoAs = (horainicial: string | undefined, intervaloTempo: number | undefined): string => {
   if (!horainicial || intervaloTempo === undefined) {
     console.error("horainicial or intervaloTempo is undefined");
@@ -187,6 +184,17 @@ export default defineComponent({
   return `${hoursStr}:${minutesStr}:${secondsStr}`;
 };
 
+const scheduleNotification = (title: string, body: string, time: Date) => {
+  const now = new Date();
+  const delay = time.getTime() - now.getTime();
+
+  if (delay > 0) {
+    setTimeout(() => {
+      new Notification(title, { body });
+    }, delay);
+  }
+};
+
 const openModal = (type: string, item: any) => {
   selectedMedicationType.value = type;
   selectedHoraInicial.value = item.horainicial || '';
@@ -214,32 +222,82 @@ const refetchData = () => {
     });
 
     onMounted(() => {
-      fetchXaropeData();
-      fetchCapsulaData();
-      fetchComprimidoData();
-      refetchData();
+      if (Notification.permission !== "granted") {
+        Notification.requestPermission();
+      }
+    fetchXaropeData();
+    fetchCapsulaData();
+    fetchComprimidoData();
+    refetchData();
     });
 
-    const xaropeDataWithTimes = computed(() => 
-      xaropeData.value.map(item => ({
-        ...item,
-        proximoAs: calculateProximoAs(item.horainicial, item.intervalotempo)
-      }))
-    );
+  const xaropeDataWithTimes = computed(() => 
+    xaropeData.value.map(item => {
+      const proximoAs = calculateProximoAs(item.horainicial, item.intervalotempo);
+      
+      const horaInicialDate = new Date();
+      const [hours, minutes] = item.horainicial.split(':').map(Number);
+      horaInicialDate.setHours(hours, minutes, 0, 0);
 
-    const capsulaDataWithTimes = computed(() => 
-      capsulaData.value.map(item => ({
-        ...item,
-        proximoAs: calculateProximoAs(item.horainicial, item.intervalotempo)
-      }))
-    );
+      const proximoAsDate = new Date();
+      const [proximoHours, proximoMinutes] = proximoAs.split(':').map(Number);
+      proximoAsDate.setHours(proximoHours, proximoMinutes, 0, 0);
 
-    const comprimidoDataWithTimes = computed(() => 
-      comprimidoData.value.map(item => ({
+      // Schedule notifications
+      scheduleNotification(`${item.nome}`, "Tomar agora!", horaInicialDate);
+      scheduleNotification(`${item.nome}`, "Tomar agora!", proximoAsDate);
+
+      return {
         ...item,
-        proximoAs: calculateProximoAs(item.horainicial, item.intervalotempo)
-      }))
-    );
+        proximoAs
+      };
+    })
+  );
+
+  const capsulaDataWithTimes = computed(() => 
+  capsulaData.value.map(item => {
+    const proximoAs = calculateProximoAs(item.horainicial, item.intervalotempo);
+    
+    // Similar scheduling logic as above
+    const horaInicialDate = new Date();
+    const [hours, minutes] = item.horainicial.split(':').map(Number);
+    horaInicialDate.setHours(hours, minutes, 0, 0);
+
+    const proximoAsDate = new Date();
+    const [proximoHours, proximoMinutes] = proximoAs.split(':').map(Number);
+    proximoAsDate.setHours(proximoHours, proximoMinutes, 0, 0);
+
+    scheduleNotification(`${item.nome}`, "Tomar agora!", horaInicialDate);
+    scheduleNotification(`${item.nome}`, "Tomar agora!", proximoAsDate);
+
+    return {
+      ...item,
+      proximoAs
+    };
+  })
+);
+
+const comprimidoDataWithTimes = computed(() => 
+  comprimidoData.value.map(item => {
+    const proximoAs = calculateProximoAs(item.horainicial, item.intervalotempo);
+    
+    const horaInicialDate = new Date();
+    const [hours, minutes] = item.horainicial.split(':').map(Number);
+    horaInicialDate.setHours(hours, minutes, 0, 0);
+
+    const proximoAsDate = new Date();
+    const [proximoHours, proximoMinutes] = proximoAs.split(':').map(Number);
+    proximoAsDate.setHours(proximoHours, proximoMinutes, 0, 0);
+
+    scheduleNotification(`${item.nome}`, "Tomar agora!", horaInicialDate);
+    scheduleNotification(`${item.nome}`, "Tomar agora!", proximoAsDate);
+
+    return {
+      ...item,
+      proximoAs
+    };
+  })
+);
 
     const addRemedio = () => {
       router.push('/remedioselect');

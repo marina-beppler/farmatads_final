@@ -62,7 +62,7 @@ app.post('/login', async (req, res) => {
       return res.status(400).json({ error: 'Credenciais inválidas!' });
     }
 
-    const token = jwt.sign({ userId: user.rows[0].id }, process.env.JWT_SECRET, { expiresIn: '1h' });
+    const token = jwt.sign({ userId: user.rows[0].id }, process.env.JWT_SECRET, { expiresIn: '730h' });
     res.json({ token });
   } catch (error) {
     console.error(error.message);

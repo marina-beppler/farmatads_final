@@ -163,7 +163,8 @@ ion-toolbar {
 #input-login-button,
 #text-fpassword {
   position: absolute;
-  left: 5%;
+  left: 5px;
+  right: 5px;
   width: 90%;
   margin: 15px;
 }

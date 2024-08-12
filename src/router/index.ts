@@ -24,7 +24,8 @@ import XaropeExtraConfig from '../views/xarope/XaropeExtraConfig.vue';
 const routes: Array<RouteRecordRaw> = [
   {
     path: '/',
-    redirect: '/home'
+    name: 'Home',
+    component: HomePage,
   },
   {
     path: '/home',

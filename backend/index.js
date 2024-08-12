@@ -7,12 +7,20 @@ const jwt = require('jsonwebtoken');
 const nodemailer = require('nodemailer');
 const pool = require('./db');
 const app = express();
+const path = require('path');
 app.use(cors({
   origin: '*'
 }));
 app.use(bodyParser.json());
 
 const PORT = process.env.PORT || 3000;
+
+app.use(express.static(path.join(__dirname, '..', 'dist')));
+
+app.get('/', (req, res) => {
+  res.sendFile(path.join(__dirname, '..', 'dist', 'index.html'));
+  console.log('deu certo fml');
+});
 
 const transporter = nodemailer.createTransport({
   service: 'gmail',
@@ -64,7 +72,7 @@ app.post('/login', async (req, res) => {
       return res.status(400).json({ error: 'Credenciais inválidas!' });
     }
 
-    const token = jwt.sign({ userId: user.rows[0].id }, process.env.JWT_SECRET, { expiresIn: '1h' });
+    const token = jwt.sign({ userId: user.rows[0].id }, process.env.JWT_SECRET, { expiresIn: '730h' });
     res.json({ token });
   } catch (error) {
     console.error(error.message);

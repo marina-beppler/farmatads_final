@@ -28,10 +28,9 @@
   </ion-page>
 </template>
 
-
 <script lang="ts">
 import { defineComponent, ref } from 'vue';
-import { IonPage, IonHeader, IonToolbar, IonButton, IonIcon, IonContent, IonCard, IonItem, IonInput, IonButtons, IonToast, toastController } from '@ionic/vue';
+import { IonPage, IonHeader, IonToolbar, IonButton, IonIcon, IonContent, IonCard, IonItem, IonInput, IonButtons, toastController } from '@ionic/vue';
 import { arrowBackOutline } from 'ionicons/icons';
 import { useRouter } from 'vue-router';
 import axios from 'axios';
@@ -49,55 +48,68 @@ export default defineComponent({
     IonItem,
     IonInput,
     IonButtons,
-    IonToast,
   },
   setup() {
     const router = useRouter();
-    return {
-      email: ref(''),
-      password: ref(''),
-      arrowBackOutline: arrowBackOutline
+    const email = ref('');
+    const password = ref('');
+
+    const dismissModal = () => {
+      router.push('/home');
     };
-  },
-  methods: {
-    dismissModal() {
-      this.$router.push('/home');
-    },
-    async presentToast (message: string) {
+
+    const presentToast = async (message: string) => {
       const toast = await toastController.create({
         message: message,
         duration: 1500
       });
       toast.present();
-    },
-    async login() {
-      if (!this.email || !this.password) {
-        await this.presentToast('Login é necessário');
-        return;
-      }
+    };
 
-      const padrao = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
-      if (!padrao.test(this.email)) {
-        await this.presentToast('E-mail/senha inválidos!');
-        return;
-      }
+    const login = async () => {
+  if (!email.value || !password.value) {
+    await presentToast('Email e senha são necessários');
+    return;
+  }
 
-      try {
-        const response = await axios.post('http://localhost:3000/login', {
-          email: this.email,
-          password: this.password,
-        });
-        console.log(response.data);
-        localStorage.setItem('token', response.data.token);
-        this.$router.push('/menu');
-      } catch (error) {
-        console.error(error);
-      }
-    },
-    openForgotPassword() {
-      this.$router.push('/forgotPassword');
-      console.log('Abrir esquecer minha senha');
-    }    
+  const emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+  if (!emailPattern.test(email.value)) {
+    await presentToast('E-mail inválido');
+    return;
+  }
+
+  try {
+    const response = await axios.post('http://10.0.2.2:3000/login', {
+      email: email.value,
+      password: password.value,
+    });
+    localStorage.setItem('token', response.data.token);
+    router.push('/menu');
+  } catch (error: unknown) {
+    if (axios.isAxiosError(error)) {
+      console.error('Login request error:', error.response ? error.response.data : error.message);
+      await presentToast('Erro ao fazer login: ' + (error.response ? error.response.data.message : error.message));
+    } else {
+      console.error('Unexpected error:', error);
+      await presentToast('Erro inesperado ao fazer login');
+    }
+  }
+};
+
+
+    const openForgotPassword = () => {
+      router.push('/forgotPassword');
+    };
+
+    return {
+      email,
+      password,
+      arrowBackOutline,
+      dismissModal,
+      presentToast,
+      login,
+      openForgotPassword
+    };
   }
 });
 </script>
@@ -145,53 +157,34 @@ ion-toolbar {
   --color: black;
 }
 
-#input-email {
+#input-email,
+#input-password,
+#input-fpassword-button,
+#input-login-button,
+#text-fpassword {
   position: absolute;
-  top: 20%;
   left: 5%;
-  -ms-transform: translate(-20%, -20%);
-  transform: translate(-5%, -5%);
   width: 90%;
   margin: 15px;
+}
+
+#input-email {
+  top: 20%;
 }
 
 #input-password {
-  position: absolute;
   top: 35%;
-  left: 5%;
-  -ms-transform: translate(-35%, -35%);
-  transform: translate(-5%, -5%);
-  width: 90%;
-  margin: 15px;
-}
-
-#input-fpassword-button {
-  position: absolute;
-  top: 80%;
-  left: 5%;
-  -ms-transform: translate(-80%, -80%);
-  transform: translate(-5%, -5%);
-  width: 90%;
-  margin: 15px;
 }
 
 #input-login-button {
-  position: absolute;
   top: 50%;
-  left: 5%;
-  -ms-transform: translate(-50%, -50%);
-  transform: translate(-5%, -5%);
-  width: 90%;
-  margin: 15px;
 }
 
 #text-fpassword {
-  position: absolute;
   top: 70%;
-  left: 5%;
-  -ms-transform: translate(-70%, -70%);
-  transform: translate(-5%, -5%);
-  width: 90%;
-  margin: 15px;
+}
+
+#input-fpassword-button {
+  top: 80%;
 }
 </style>

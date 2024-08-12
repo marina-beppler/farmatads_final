@@ -20,6 +20,7 @@ import forgotPassword from '../views/forgotPassword.vue';
 import XaropeConfig from '../views/xarope/XaropeConfig.vue';
 import XaropeExtraConfig from '../views/xarope/XaropeExtraConfig.vue';
 
+
 const routes: Array<RouteRecordRaw> = [
   {
     path: '/',

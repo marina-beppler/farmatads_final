@@ -24,7 +24,7 @@ cd farmatads
 #### 1 - CRIAR DATABASE
 
 ```
-CREATE database Farmatads;
+CREATE database farmatads;
 ```
 
 **CERTIFIQUE-SE QUE ESTÁ CONECTADA NESSA DATABASE ANTES DE RODAR QUALQUER OUTRO COMANDO**
@@ -52,6 +52,7 @@ CREATE TABLE farmatads.tipoMed (
 
 CREATE TABLE farmatads.medicamento (
     id SERIAL PRIMARY KEY,
+    usuario INTEGER REFERENCES farmatads.users(id),
     tipo INTEGER REFERENCES farmatads.tipoMed(id),
     nome VARCHAR(100) NOT NULL,
     horaInicial TIME NOT NULL,

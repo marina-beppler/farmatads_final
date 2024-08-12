@@ -194,7 +194,7 @@ p {
 }
 
 #background {
-  height: 95%;
+  min-height: 650px;
   background-color: #E7F7F4;
 }
 

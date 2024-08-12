@@ -47,7 +47,6 @@ export default defineComponent({
 <template>
 <ion-page>
     <ion-header>
-        <NavigationMenu />
     </ion-header>
     <ion-content>
         <ion-card id="background">

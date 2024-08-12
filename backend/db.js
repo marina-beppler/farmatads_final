@@ -24,9 +24,7 @@ const pool = new Pool({
   database: dbDatabase,
   password: dbPassword,
   port: parseInt(dbPort, 10),
-  ssl: {
-    rejectUnauthorized: false,
-  }
+  ssl: false,
 });
 
 pool.connect((err, client, release) => {

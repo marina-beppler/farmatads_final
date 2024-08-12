@@ -6,19 +6,22 @@
     <ion-content>
       <ion-card id="background">
         <ion-card class="card">
+          <h1>Remédios</h1>
+          <p>Para registrar um medicamento tomado, clicar nele para registar o horário. Para adicionar novos medicamentos, dirija-se até o fim da página</p>
           <!-- Xarope -->
           <div v-if="xaropeDataWithTimes.length" class="xarope-list">
-            <div v-for="item in xaropeDataWithTimes" :key="item.id" :class="['xarope-item', `xarope-${item.cor}`]">
+            <div v-for="item in xaropeDataWithTimes" :key="item.id" :class="['xarope-item', `xarope-${item.cor}`]" @click="openModal('xarope', item)">
               <div class="xarope-info">
                 <h1 class="xarope-name" :style="{ color: getColor(item.cor) }">{{ item.nome }}</h1>
                 <p>Próximo às: {{ item.proximoAs }}</p>
+                <p>Quantidade de doses restante: {{ item.qtddose }}</p>
               </div>
               <img :src="`src/assets/xarope-${item.cor}.png`" :alt="item.cor" class="xarope-image" />
               <div class="buttons-container">
-                <ion-button color="primary" @click="editItem('xarope', item)" class="edit-button">
+                <ion-button color="primary" @click.stop="editItem('xarope', item)" class="edit-button">
                   <ion-icon :icon="pencilOutline"></ion-icon>
                 </ion-button>
-                <ion-button color="danger" @click="deleteItem('xarope', item.id)" class="delete-button">
+                <ion-button color="danger" @click.stop="deleteItem('xarope', item.id)" class="delete-button">
                   <ion-icon :icon="trashOutline"></ion-icon>
                 </ion-button>
               </div>
@@ -27,17 +30,18 @@
 
           <!-- Capsula -->
           <div v-if="capsulaDataWithTimes.length" class="capsula-list">
-            <div v-for="item in capsulaDataWithTimes" :key="item.id" :class="['capsula-item', `capsula-${item.cor}`]">
+            <div v-for="item in capsulaDataWithTimes" :key="item.id" :class="['capsula-item', `capsula-${item.cor}`]" @click="openModal('capsula', item)">
               <div class="capsula-info">
                 <h1 class="capsula-name" :style="{ color: getColor(item.cor) }">{{ item.nome }}</h1>
                 <p>Próximo às: {{ item.proximoAs }}</p>
+                <p>Quantidade de cápsulas restantes: {{ item.qtdcapsula }}</p>
               </div>
               <img :src="`src/assets/capsula-${item.cor}.png`" :alt="item.cor" class="capsula-image" />
               <div class="buttons-container">
-                <ion-button color="primary" @click="editItem('capsula', item)" class="edit-button">
+                <ion-button color="primary" @click.stop="editItem('capsula', item)" class="edit-button">
                   <ion-icon :icon="pencilOutline"></ion-icon>
                 </ion-button>
-                <ion-button color="danger" @click="deleteItem('capsula', item.id)" class="delete-button">
+                <ion-button color="danger" @click.stop="deleteItem('capsula', item.id)" class="delete-button">
                   <ion-icon :icon="trashOutline"></ion-icon>
                 </ion-button>
               </div>
@@ -46,17 +50,18 @@
 
           <!-- Comprimido -->
           <div v-if="comprimidoDataWithTimes.length" class="comprimido-list">
-            <div v-for="item in comprimidoDataWithTimes" :key="item.id" :class="['comprimido-item', `comprimido-${item.cor}`]">
+            <div v-for="item in comprimidoDataWithTimes" :key="item.id" :class="['comprimido-item', `comprimido-${item.cor}`]" @click="openModal('comprimido', item)">
               <div class="comprimido-info">
                 <h1 class="comprimido-name" :style="{ color: getColor(item.cor) }">{{ item.nome }}</h1>
                 <p>Próximo às: {{ item.proximoAs }}</p>
+                <p>Quantidade de comprimidos restantes: {{ item.qtdcomprimido }}</p>
               </div>
               <img :src="`src/assets/comprimido-${item.cor}.png`" :alt="item.cor" class="comprimido-image" />
               <div class="buttons-container">
-                <ion-button color="primary" @click="editItem('comprimido', item)" class="edit-button">
+                <ion-button color="primary" @click.stop="editItem('comprimido', item)" class="edit-button">
                   <ion-icon :icon="pencilOutline"></ion-icon>
                 </ion-button>
-                <ion-button color="danger" @click="deleteItem('comprimido', item.id)" class="delete-button">
+                <ion-button color="danger" @click.stop="deleteItem('comprimido', item.id)" class="delete-button">
                   <ion-icon :icon="trashOutline"></ion-icon>
                 </ion-button>
               </div>
@@ -71,9 +76,21 @@
           <p>Para adicionar um novo medicamento clique no círculo acima</p>
         </ion-card>
       </ion-card>
+
+      <!-- Medication Modal -->
+      <RemedioModal
+        :isOpen="isModalOpen"
+        :medicationType="selectedMedicationType"
+        :horaInicial="selectedHoraInicial"
+        :medicationId="selectedMedicationId"
+        :medicationName="selectedNome"
+        @update:isOpen="isModalOpen = $event"
+      />
+
     </ion-content>
   </ion-page>
 </template>
+
 
 
 <script lang="ts">
@@ -84,6 +101,7 @@ import { addOutline, pencilOutline, trashOutline } from 'ionicons/icons';
 import { computed, defineComponent, onMounted, ref, watch } from 'vue';
 import { useRoute } from 'vue-router';
 import NavigationMenu from '../views/components/NavigationMenu.vue';
+import RemedioModal from '../views/modals/RemedioModal.vue';
 
 export default defineComponent({
   name: 'RemedioInit',
@@ -94,12 +112,18 @@ export default defineComponent({
     IonPage,
     IonCard,
     IonContent,
-    NavigationMenu
+    NavigationMenu,
+    RemedioModal
   },
   setup() {
     const xaropeData = ref<any[]>([]);
     const capsulaData = ref<any[]>([]);
     const comprimidoData = ref<any[]>([]);
+    const isModalOpen = ref(false);
+    const selectedMedicationType = ref('');
+    const selectedHoraInicial = ref('');
+    const selectedNome = ref('');
+    const selectedMedicationId = ref(0);
     const route = useRoute();
 
     const fetchXaropeData = async () => {
@@ -128,6 +152,8 @@ export default defineComponent({
         console.error("Error fetching comprimido data:", error);
       }
     };
+
+    
 
     const calculateProximoAs = (horainicial: string | undefined, intervaloTempo: number | undefined): string => {
   if (!horainicial || intervaloTempo === undefined) {
@@ -161,16 +187,37 @@ export default defineComponent({
   return `${hoursStr}:${minutesStr}:${secondsStr}`;
 };
 
+const openModal = (type: string, item: any) => {
+  selectedMedicationType.value = type;
+  selectedHoraInicial.value = item.horainicial || '';
+  selectedMedicationId.value = item.id || 0;
+  selectedNome.value = item.nome || '';
+  isModalOpen.value = true;
+};
+
+const refetchData = () => {
+    fetchXaropeData();
+    fetchCapsulaData();
+    fetchComprimidoData();
+  };
+
     watch(route, () => {
       fetchXaropeData();
       fetchCapsulaData();
       fetchComprimidoData();
     });
 
+    watch(isModalOpen, (newVal) => {
+    if (!newVal) {
+      refetchData();
+    }
+    });
+
     onMounted(() => {
       fetchXaropeData();
       fetchCapsulaData();
       fetchComprimidoData();
+      refetchData();
     });
 
     const xaropeDataWithTimes = computed(() => 
@@ -249,7 +296,13 @@ export default defineComponent({
       xaropeDataWithTimes,
       capsulaDataWithTimes,
       comprimidoDataWithTimes,
-      getColor
+      getColor,
+      isModalOpen,
+      openModal,
+      selectedMedicationType,
+      selectedHoraInicial,
+      selectedMedicationId,
+      selectedNome
     };
   }
 });
@@ -268,7 +321,8 @@ p {
 
 h1 {
   font-family: "Kufam";
-  font-size: 20px;
+  font-size: 30px;
+  color: #034F67;
 }
 
 #background {

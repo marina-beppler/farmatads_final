@@ -86,7 +86,7 @@
             type: props.medicationType
           };
   
-          await axios.post('http://localhost:3000/update-remedio', payload);
+          await axios.post('http://10.0.2.2:3000/update-remedio', payload);
   
           // Close the modal after successful save
           closeModal();

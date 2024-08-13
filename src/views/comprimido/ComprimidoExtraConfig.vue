@@ -81,7 +81,7 @@ export default defineComponent({
       }
 
       try {
-        await axios.post('http://localhost:3000/comprimido', data);
+        await axios.post('http://10.0.2.2:3000/comprimido', data);
       } catch (error) {
         console.error('Failed to save comprimido:', error);
         presentToast('Erro ao salvar medicamento!');

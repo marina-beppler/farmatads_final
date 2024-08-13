@@ -75,7 +75,7 @@ export default defineComponent({
     },
     async verifyCode() {
       try {
-        const response = await axios.post('http://localhost:3000/verify-code', {
+        const response = await axios.post('http://10.0.2.2:3000/verify-code', {
           email: this.email,
           code: this.codigo
         });

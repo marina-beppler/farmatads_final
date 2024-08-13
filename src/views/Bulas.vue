@@ -5,6 +5,8 @@ import { IonHeader, IonToolbar, IonButton, IonButtons, IonIcon, IonInput, IonIte
 import { useRouter } from 'vue-router';
 import { searchOutline } from 'ionicons/icons';
 import NavigationMenu from '../views/components/NavigationMenu.vue';
+import { Filesystem, Directory, Encoding } from '@capacitor/filesystem';
+
 
 interface Medicamento {
     idProduto: number;
@@ -64,26 +66,42 @@ export default defineComponent({
             }
         };
 
+        const blobToBase64 = (blob: Blob): Promise<string> => {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onloadend = () => {
+                    const base64String = (reader.result as string).split(',')[1];
+                    resolve(base64String);
+                };
+                reader.onerror = reject;
+                reader.readAsDataURL(blob);
+            });
+        };
+
         const fetchBulaPDF = async (id: string) => {
             try {
+                presentToast('Baixando bula, aguarde...');
+
                 const response = await axios.get('https://bula.vercel.app/pdf', {
-                    params: {
-                        id: id
-                    },
+                    params: { id: id },
                     responseType: 'blob'
                 });
-                const url = window.URL.createObjectURL(new Blob([response.data]));
-                const link = document.createElement('a');
-                link.href = url;
-                link.setAttribute('download', 'bula.pdf'); 
-                document.body.appendChild(link);
-                link.click();
-                document.body.removeChild(link);
+
+                const base64String = await blobToBase64(response.data);
+
+                await Filesystem.writeFile({
+                    path: 'bula.pdf',
+                    data: base64String,
+                    directory: Directory.Documents
+                });
+
+                presentToast('Bula salva com sucesso!');
             } catch (error) {
                 console.error('Error fetching PDF:', error);
                 presentToast('Erro ao obter a bula do medicamento!');
             }
         };
+
 
         return {
             medicamento,

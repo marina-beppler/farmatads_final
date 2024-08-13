@@ -99,7 +99,7 @@ export default defineComponent({
       };
 
       try {
-        await axios.post('http://localhost:3000/xarope', data);
+        await axios.post('http://10.0.2.2:3000/xarope', data);
       } catch (error) {
         console.error('Failed to save xarope:', error);
         presentToast('Erro ao salvar medicamento!');

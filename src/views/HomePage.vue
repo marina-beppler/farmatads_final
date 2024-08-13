@@ -36,7 +36,7 @@ export default defineComponent({
     </ion-header>
     <ion-content class="background">
       <ion-card class="center">
-        <ion-img id="logo" src="src/assets/logo.png"/>
+        <ion-img id="logo" src="assets/logo.png"/>
         <h1 id="text-center-title">Bem vindo(a) ao Farmatads!</h1>
         <br>
         <p id="text-center-cadastro">Se você é novo aqui, clique em “Criar Conta” para começar!</p>

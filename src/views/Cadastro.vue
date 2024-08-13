@@ -92,7 +92,7 @@ export default defineComponent({
       }
 
       try {
-        const response = await axios.post('http://localhost:3000/register', {
+        const response = await axios.post('http://10.0.2.2:3000/register', {
           name: this.name,
           password: this.password,
           email: this.email,

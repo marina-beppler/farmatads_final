@@ -16,7 +16,7 @@
                 <p>Próximo às: {{ item.proximoAs }}</p>
                 <p>Quantidade de doses restante: {{ item.qtddose }}</p>
               </div>
-              <img :src="`src/assets/xarope-${item.cor}.png`" :alt="item.cor" class="xarope-image" />
+              <ion-img :src="`../assets/xarope-${item.cor}.png`" :alt="item.cor" class="xarope-image" />
               <div class="buttons-container">
                 <ion-button color="primary" @click.stop="editItem('xarope', item)" class="edit-button">
                   <ion-icon :icon="pencilOutline"></ion-icon>
@@ -36,7 +36,7 @@
                 <p>Próximo às: {{ item.proximoAs }}</p>
                 <p>Quantidade de cápsulas restantes: {{ item.qtdcapsula }}</p>
               </div>
-              <img :src="`src/assets/capsula-${item.cor}.png`" :alt="item.cor" class="capsula-image" />
+              <ion-img :src="`../assets/capsula-${item.cor}.png`" :alt="item.cor" class="capsula-image" />
               <div class="buttons-container">
                 <ion-button color="primary" @click.stop="editItem('capsula', item)" class="edit-button">
                   <ion-icon :icon="pencilOutline"></ion-icon>
@@ -56,7 +56,7 @@
                 <p>Próximo às: {{ item.proximoAs }}</p>
                 <p>Quantidade de comprimidos restantes: {{ item.qtdcomprimido }}</p>
               </div>
-              <img :src="`src/assets/comprimido-${item.cor}.png`" :alt="item.cor" class="comprimido-image" />
+              <ion-img :src="`../assets/comprimido-${item.cor}.png`" :alt="item.cor" class="comprimido-image" />
               <div class="buttons-container">
                 <ion-button color="primary" @click.stop="editItem('comprimido', item)" class="edit-button">
                   <ion-icon :icon="pencilOutline"></ion-icon>
@@ -95,13 +95,15 @@
 
 <script lang="ts">
 import router from '@/router';
-import { IonButton, IonCard, IonContent, IonHeader, IonIcon, IonPage } from '@ionic/vue';
+import { IonButton, IonCard, IonContent, IonHeader, IonIcon, IonPage, IonImg } from '@ionic/vue';
 import axios from 'axios';
 import { addOutline, pencilOutline, trashOutline } from 'ionicons/icons';
 import { computed, defineComponent, onMounted, ref, watch } from 'vue';
 import { useRoute } from 'vue-router';
 import NavigationMenu from '../views/components/NavigationMenu.vue';
 import RemedioModal from '../views/modals/RemedioModal.vue';
+import { LocalNotifications } from '@capacitor/local-notifications';
+
 
 export default defineComponent({
   name: 'RemedioInit',
@@ -113,7 +115,8 @@ export default defineComponent({
     IonCard,
     IonContent,
     NavigationMenu,
-    RemedioModal
+    RemedioModal, 
+    IonImg
   },
   setup() {
     const xaropeData = ref<any[]>([]);
@@ -128,7 +131,7 @@ export default defineComponent({
 
     const fetchXaropeData = async () => {
       try {
-        const response = await axios.get('http://localhost:3000/xarope'); 
+        const response = await axios.get('http://10.0.2.2:3000/xarope'); 
         xaropeData.value = response.data;
       } catch (error) {
         console.error("Error fetching xarope data:", error);
@@ -137,7 +140,7 @@ export default defineComponent({
 
     const fetchCapsulaData = async () => {
       try {
-        const response = await axios.get('http://localhost:3000/capsula'); 
+        const response = await axios.get('http://10.0.2.2:3000/capsula'); 
         capsulaData.value = response.data;
       } catch (error) {
         console.error("Error fetching capsula data:", error);
@@ -146,46 +149,45 @@ export default defineComponent({
 
     const fetchComprimidoData = async () => {
       try {
-        const response = await axios.get('http://localhost:3000/comprimido'); 
+        const response = await axios.get('http://10.0.2.2:3000/comprimido'); 
         comprimidoData.value = response.data;
       } catch (error) {
         console.error("Error fetching comprimido data:", error);
       }
     };
 
-    
-
     const calculateProximoAs = (horainicial: string | undefined, intervaloTempo: number | undefined): string => {
-  if (!horainicial || intervaloTempo === undefined) {
-    console.error("horainicial or intervaloTempo is undefined");
-    return "00:00:00";
-  }
+      if (!horainicial || intervaloTempo === undefined) {
+        console.error("horainicial or intervaloTempo is undefined");
+        return "00:00:00";
+      }
 
-  const horaAtual = new Date();
+      const horaAtual = new Date();
 
-  const [hours, minutes] = horainicial.split(':').map(Number);
-  const horaInicial = new Date();
-  horaInicial.setHours(hours, minutes, 0, 0);
+      const [hours, minutes] = horainicial.split(':').map(Number);
+      const horaInicial = new Date();
+      horaInicial.setHours(hours, minutes, 0, 0);
 
-  // Converter intervaloTempo de horas para milisegundos
-  const intervaloEmMilissegundos = intervaloTempo * 60 * 60 * 1000;
+      // Converter intervaloTempo de horas para milisegundos
+      const intervaloEmMilissegundos = intervaloTempo * 60 * 60 * 1000;
 
-  let proximoAs = new Date(horaInicial);
+      let proximoAs = new Date(horaInicial);
 
-  if (horaAtual > horaInicial) {
-    while (proximoAs <= horaAtual) {
-      proximoAs = new Date(proximoAs.getTime() + intervaloEmMilissegundos);
-    }
-  } else {
-    proximoAs = new Date(horaInicial);
-  }
+      if (horaAtual > horaInicial) {
+        while (proximoAs <= horaAtual) {
+          proximoAs = new Date(proximoAs.getTime() + intervaloEmMilissegundos);
+        }
+      } else {
+        proximoAs = new Date(horaInicial);
+      }
 
-  const hoursStr = proximoAs.getHours().toString().padStart(2, '0');
-  const minutesStr = proximoAs.getMinutes().toString().padStart(2, '0');
-  const secondsStr = proximoAs.getSeconds().toString().padStart(2, '0');
 
-  return `${hoursStr}:${minutesStr}:${secondsStr}`;
-};
+      const hoursStr = proximoAs.getHours().toString().padStart(2, '0');
+      const minutesStr = proximoAs.getMinutes().toString().padStart(2, '0');
+      const secondsStr = proximoAs.getSeconds().toString().padStart(2, '0');
+
+      return `${hoursStr}:${minutesStr}:${secondsStr}`;
+    };
 
 const openModal = (type: string, item: any) => {
   selectedMedicationType.value = type;
@@ -201,10 +203,146 @@ const refetchData = () => {
     fetchComprimidoData();
   };
 
+  const scheduleAndroidNotification = async (title: string, body: string, id: number, time: Date) => {
+    await LocalNotifications.schedule({
+      notifications: [
+        {
+          title,
+          body,
+          id,
+          schedule: { at: time },
+          actionTypeId: "",
+          extra: null,
+        },
+      ],
+    });
+  };
+
+  const timeStringToDate = (timeStr: string, referenceDate: Date): Date => {
+  const [hours, minutes, seconds] = timeStr.split(':').map(Number);
+  const date = new Date(referenceDate);
+  date.setHours(hours, minutes, seconds, 0);
+  return date;
+};
+
+const scheduleNotifInicialXarope = async () => {
+  const notifications = xaropeData.value.map(xarope => {
+    const horaInicialTimeString = xarope.horainicial || '00:00:00'; 
+    const horaInicialDate = timeStringToDate(horaInicialTimeString, new Date());
+
+    return {
+      title: xarope.nome, 
+      body: `Tome seu medicamento!`, 
+      id: xarope.id,
+      time: horaInicialDate 
+    };
+  });
+
+  for (const notification of notifications) {
+    await scheduleAndroidNotification(notification.title, notification.body, notification.id, notification.time);
+  }
+};
+
+const scheduleNotifProximaXarope = async () => {
+  const notifications = xaropeData.value.map(item => {
+    const proximoAsTimeString = calculateProximoAs(item.horainicial, item.intervalotempo);
+    const proximoAsDate = timeStringToDate(proximoAsTimeString, new Date());
+
+    return {
+      title: item.nome, 
+      body: 'Tome seu medicamento!', 
+      id: item.id + 1,
+      time: proximoAsDate
+    };
+  });
+
+  for (const notification of notifications) {
+    await scheduleAndroidNotification(notification.title, notification.body, notification.id, notification.time);
+  }
+};
+
+const scheduleNotifInicialCapsula = async () => {
+  const notifications = capsulaData.value.map(capsula => {
+    const horaInicialTimeString = capsula.horainicial || '00:00:00'; 
+    const horaInicialDate = timeStringToDate(horaInicialTimeString, new Date());
+
+    return {
+      title: capsula.nome, 
+      body: `Tome seu medicamento!`, 
+      id: capsula.id,
+      time: horaInicialDate 
+    };
+  });
+
+  for (const notification of notifications) {
+    await scheduleAndroidNotification(notification.title, notification.body, notification.id, notification.time);
+  }
+};
+
+const scheduleNotifProximaCapsula = async () => {
+  const notifications = capsulaData.value.map(item => {
+    const proximoAsTimeString = calculateProximoAs(item.horainicial, item.intervalotempo);
+    const proximoAsDate = timeStringToDate(proximoAsTimeString, new Date());
+
+    return {
+      title: item.nome, 
+      body: 'Tome seu medicamento!', 
+      id: item.id + 1,
+      time: proximoAsDate
+    };
+  });
+
+  for (const notification of notifications) {
+    await scheduleAndroidNotification(notification.title, notification.body, notification.id, notification.time);
+  }
+};
+
+const scheduleNotifInicialComprimido = async () => {
+  const notifications = comprimidoData.value.map(comprimido => {
+    const horaInicialTimeString = comprimido.horainicial || '00:00:00'; 
+    const horaInicialDate = timeStringToDate(horaInicialTimeString, new Date());
+
+    return {
+      title: comprimido.nome, 
+      body: `Tome seu medicamento!`, 
+      id: comprimido.id,
+      time: horaInicialDate 
+    };
+  });
+
+  for (const notification of notifications) {
+    await scheduleAndroidNotification(notification.title, notification.body, notification.id, notification.time);
+  }
+};
+
+const scheduleNotifProximaComprimido = async () => {
+  const notifications = capsulaData.value.map(item => {
+    const proximoAsTimeString = calculateProximoAs(item.horainicial, item.intervalotempo);
+    const proximoAsDate = timeStringToDate(proximoAsTimeString, new Date());
+
+    return {
+      title: item.nome, 
+      body: 'Tome seu medicamento!', 
+      id: item.id + 1,
+      time: proximoAsDate
+    };
+  });
+
+  for (const notification of notifications) {
+    await scheduleAndroidNotification(notification.title, notification.body, notification.id, notification.time);
+  }
+};
+
     watch(route, () => {
       fetchXaropeData();
       fetchCapsulaData();
       fetchComprimidoData();
+      scheduleNotifInicialXarope();
+      scheduleNotifInicialCapsula();
+      scheduleNotifInicialComprimido();
+      scheduleNotifProximaXarope();
+      scheduleNotifProximaCapsula();
+      scheduleNotifProximaComprimido();
     });
 
     watch(isModalOpen, (newVal) => {
@@ -213,11 +351,18 @@ const refetchData = () => {
     }
     });
 
-    onMounted(() => {
+    onMounted(async () => {
+      await LocalNotifications.requestPermissions();
       fetchXaropeData();
       fetchCapsulaData();
       fetchComprimidoData();
       refetchData();
+      scheduleNotifInicialXarope();
+      scheduleNotifInicialCapsula();
+      scheduleNotifInicialComprimido();
+      scheduleNotifProximaXarope();
+      scheduleNotifProximaCapsula();
+      scheduleNotifProximaComprimido();
     });
 
     const xaropeDataWithTimes = computed(() => 
@@ -262,7 +407,7 @@ const refetchData = () => {
 
     const deleteItem = async (type: string, id: number) => {
       try {
-        await axios.delete(`http://localhost:3000/${type}/${id}`);
+        await axios.delete(`http://10.0.2.2:3000/${type}/${id}`);
         if (type === 'xarope') {
           fetchXaropeData();
         } else if (type === 'capsula') {

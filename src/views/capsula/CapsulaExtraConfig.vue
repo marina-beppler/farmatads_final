@@ -95,7 +95,7 @@ export default defineComponent({
       }
 
       try {
-        await axios.post('http://localhost:3000/capsula', data);
+        await axios.post('http://10.0.2.2:3000/capsula', data);
       } catch (error) {
         console.error('Failed to save capsula:', error);
         presentToast('Erro ao salvar medicamento!');

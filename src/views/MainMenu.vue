@@ -43,7 +43,7 @@ export default defineComponent({
     <ion-content>
         <ion-card id="background">
             <ion-card class="card">
-                <ion-img id="logo" src="src/assets/logo.png"/>
+                <ion-img id="logo" src="assets/logo.png"/>
                 <div id="first">
                     <p>Para acessar suas cartelas digitais clique no botão “Remédios” no lado superior esquerdo.</p>
                 </div>

@@ -55,7 +55,7 @@
             </div>
           </ion-item>
           <br />
-          <ion-img id="xarope" :src="`src/assets/xarope-${selectedColor}.png`"/>
+          <ion-img id="xarope" :src="`../assets/xarope-${selectedColor}.png`"/>
           <br>
           <ion-card id="right">
             <ion-button @click="saveXarope">
@@ -122,7 +122,7 @@ export default defineComponent({
     onMounted(async () => {
       const xaropeId = router.currentRoute.value.params.id;
       try {
-        const response = await axios.get(`http://localhost:3000/xarope/${xaropeId}`);
+        const response = await axios.get(`http://10.0.2.2:3000/xarope/${xaropeId}`);
         console.log(response.data); 
         const xarope = response.data;
         remedio.value = xarope.nome || '';
@@ -193,7 +193,7 @@ export default defineComponent({
       };
 
     try {
-      await axios.put(`http://localhost:3000/xarope/${xaropeId}`, data);
+      await axios.put(`http://10.0.2.2:3000/xarope/${xaropeId}`, data);
       router.push('/remedios');
     } catch (error) {
       console.error('Failed to save xarope:', error);

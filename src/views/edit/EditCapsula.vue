@@ -48,7 +48,7 @@
               </div>
             </ion-item>
             <br />
-            <ion-img id="capsula" :src="`src/assets/capsula-${selectedColor}.png`"/>
+            <ion-img id="capsula" :src="`../assets/capsula-${selectedColor}.png`"/>
             <br>
             <ion-card id="right">
               <ion-button @click="saveCapsula">
@@ -114,7 +114,7 @@ import { useRouter } from 'vue-router';
       onMounted(async () => {
         const capsulaId = router.currentRoute.value.params.id;
         try {
-          const response = await axios.get(`http://localhost:3000/capsula/${capsulaId}`);
+          const response = await axios.get(`http://10.0.2.2:3000/capsula/${capsulaId}`);
           const capsula = response.data;
           remedio.value = capsula.nome || '';
           qtdcapsula.value = capsula.qtdcapsula || 0;
@@ -172,7 +172,7 @@ import { useRouter } from 'vue-router';
         };
   
         try {
-          await axios.put(`http://localhost:3000/capsula/${capsulaId}`, data);
+          await axios.put(`http://10.0.2.2:3000/capsula/${capsulaId}`, data);
           router.push('/remedios'); 
         } catch (error) {
           console.error('Failed to save capsula:', error);

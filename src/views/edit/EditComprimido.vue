@@ -48,7 +48,7 @@
               </div>
             </ion-item>
             <br />
-            <ion-img id="comprimido" :src="`src/assets/comprimido-${selectedColor}.png`"/>
+            <ion-img id="comprimido" :src="`../assets/comprimido-${selectedColor}.png`"/>
             <br>
             <ion-card id="right">
               <ion-button @click="saveComprimido">
@@ -114,7 +114,7 @@ import { useRouter } from 'vue-router';
       onMounted(async () => {
         const comprimidoId = router.currentRoute.value.params.id;
         try {
-          const response = await axios.get(`http://localhost:3000/comprimido/${comprimidoId}`);
+          const response = await axios.get(`http://10.0.2.2:3000/comprimido/${comprimidoId}`);
           const comprimido = response.data;
           remedio.value = comprimido.nome || '';
           qtdcomprimido.value = comprimido.qtdcomprimido || 0;
@@ -172,7 +172,7 @@ import { useRouter } from 'vue-router';
         };
   
         try {
-          await axios.put(`http://localhost:3000/comprimido/${comprimidoId}`, data);
+          await axios.put(`http://10.0.2.2:3000/comprimido/${comprimidoId}`, data);
           router.push('/remedios'); 
         } catch (error) {
           console.error('Failed to save comprimido:', error);

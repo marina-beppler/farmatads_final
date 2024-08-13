@@ -55,7 +55,7 @@ export default defineComponent({
     const password = ref('');
 
     const dismissModal = () => {
-      router.push('/home');
+      router.push('/');
     };
 
     const presentToast = async (message: string) => {

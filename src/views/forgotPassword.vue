@@ -75,7 +75,7 @@ export default defineComponent({
       }
 
       try {
-        const response = await axios.post('http://localhost:3000/send-code', {
+        const response = await axios.post('http://10.0.2.2:3000/send-code', {
           email: this.email,
         });
         this.presentToast('Email enviado!');

@@ -80,14 +80,16 @@ app.post('/login', async (req, res) => {
   }
 });
 
+let codes = {}; 
+
 app.post('/send-code', async (req, res) => {
   const { email } = req.body;
-  
+
   if (!email) {
     return res.status(400).json({ error: 'Email é obrigatório!' });
   }
-  
-  const code = Math.floor(100000 + Math.random() * 900000).toString(); 
+
+  const code = Math.floor(100000 + Math.random() * 900000).toString();
 
   const mailOptions = {
     from: process.env.EMAIL_USER,
@@ -98,11 +100,48 @@ app.post('/send-code', async (req, res) => {
 
   try {
     await transporter.sendMail(mailOptions);
+    codes[email] = code; 
     res.status(200).json({ message: 'Email enviado', code });
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: 'Erro ao enviar email' });
   }
+});
+
+app.post('/verify-code', (req, res) => {
+  const { email, code } = req.body;
+
+  if (!email || !code) {
+    return res.status(400).json({ error: 'Email e código são obrigatórios!' });
+  }
+
+  const storedCode = codes[email];
+
+  if (storedCode === code) {
+    res.status(200).json({ valid: true });
+  } else {
+    res.status(400).json({ valid: false });
+  }
+});
+
+app.post('/reset-password', async (req, res) => {
+  const { email, password } = req.body;
+
+  if (!email || !password) {
+    return res.status(400).json({ error: 'Email e senha são obrigatórios!' });
+  }
+
+  try {
+    const hashedPassword = await bcrypt.hash(password, 10);
+    await pool.query(
+      'UPDATE farmatads.users SET password = $1 WHERE email = $2',
+      [hashedPassword, email]
+    );
+    res.status(200).json({ message: 'Senha redefinida com sucesso' });
+  } catch (error) {
+    console.error(error.message);
+    res.status(500).json({ error: 'Erro ao redefinir a senha' });
+  }
 });
 
 app.get('/xarope', async (req, res) => {

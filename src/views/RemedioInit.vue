@@ -225,52 +225,22 @@ const refetchData = () => {
   return date;
 };
 
-const scheduleNotifInicialXarope = async () => {
-  const notifications = xaropeData.value.map(xarope => {
-    const horaInicialTimeString = xarope.horainicial || '00:00:00'; 
-    const horaInicialDate = timeStringToDate(horaInicialTimeString, new Date());
-
-    return {
-      title: xarope.nome, 
-      body: `Tome seu medicamento!`, 
-      id: xarope.id,
-      time: horaInicialDate 
-    };
-  });
-
-  for (const notification of notifications) {
-    await scheduleAndroidNotification(notification.title, notification.body, notification.id, notification.time);
-  }
-};
 
 const scheduleNotifProximaXarope = async () => {
+  const now = new Date();
   const notifications = xaropeData.value.map(item => {
     const proximoAsTimeString = calculateProximoAs(item.horainicial, item.intervalotempo);
     const proximoAsDate = timeStringToDate(proximoAsTimeString, new Date());
+
+    if (proximoAsDate < now) {
+      proximoAsDate.setDate(proximoAsDate.getDate() + 1);
+    }
 
     return {
       title: item.nome, 
       body: 'Tome seu medicamento!', 
       id: item.id + 1,
       time: proximoAsDate
-    };
-  });
-
-  for (const notification of notifications) {
-    await scheduleAndroidNotification(notification.title, notification.body, notification.id, notification.time);
-  }
-};
-
-const scheduleNotifInicialCapsula = async () => {
-  const notifications = capsulaData.value.map(capsula => {
-    const horaInicialTimeString = capsula.horainicial || '00:00:00'; 
-    const horaInicialDate = timeStringToDate(horaInicialTimeString, new Date());
-
-    return {
-      title: capsula.nome, 
-      body: `Tome seu medicamento!`, 
-      id: capsula.id,
-      time: horaInicialDate 
     };
   });
 
@@ -280,9 +250,14 @@ const scheduleNotifInicialCapsula = async () => {
 };
 
 const scheduleNotifProximaCapsula = async () => {
+  const now = new Date();
   const notifications = capsulaData.value.map(item => {
     const proximoAsTimeString = calculateProximoAs(item.horainicial, item.intervalotempo);
     const proximoAsDate = timeStringToDate(proximoAsTimeString, new Date());
+
+    if (proximoAsDate < now) {
+      proximoAsDate.setDate(proximoAsDate.getDate() + 1);
+    }
 
     return {
       title: item.nome, 
@@ -291,24 +266,7 @@ const scheduleNotifProximaCapsula = async () => {
       time: proximoAsDate
     };
   });
-
-  for (const notification of notifications) {
-    await scheduleAndroidNotification(notification.title, notification.body, notification.id, notification.time);
-  }
-};
-
-const scheduleNotifInicialComprimido = async () => {
-  const notifications = comprimidoData.value.map(comprimido => {
-    const horaInicialTimeString = comprimido.horainicial || '00:00:00'; 
-    const horaInicialDate = timeStringToDate(horaInicialTimeString, new Date());
-
-    return {
-      title: comprimido.nome, 
-      body: `Tome seu medicamento!`, 
-      id: comprimido.id,
-      time: horaInicialDate 
-    };
-  });
+  
 
   for (const notification of notifications) {
     await scheduleAndroidNotification(notification.title, notification.body, notification.id, notification.time);
@@ -316,9 +274,14 @@ const scheduleNotifInicialComprimido = async () => {
 };
 
 const scheduleNotifProximaComprimido = async () => {
-  const notifications = capsulaData.value.map(item => {
+  const now = new Date();
+  const notifications = comprimidoData.value.map(item => {
     const proximoAsTimeString = calculateProximoAs(item.horainicial, item.intervalotempo);
-    const proximoAsDate = timeStringToDate(proximoAsTimeString, new Date());
+    let proximoAsDate = timeStringToDate(proximoAsTimeString, new Date());
+
+    if (proximoAsDate < now) {
+      proximoAsDate.setDate(proximoAsDate.getDate() + 1);
+    }
 
     return {
       title: item.nome, 
@@ -337,9 +300,6 @@ const scheduleNotifProximaComprimido = async () => {
       fetchXaropeData();
       fetchCapsulaData();
       fetchComprimidoData();
-      scheduleNotifInicialXarope();
-      scheduleNotifInicialCapsula();
-      scheduleNotifInicialComprimido();
       scheduleNotifProximaXarope();
       scheduleNotifProximaCapsula();
       scheduleNotifProximaComprimido();
@@ -357,9 +317,6 @@ const scheduleNotifProximaComprimido = async () => {
       fetchCapsulaData();
       fetchComprimidoData();
       refetchData();
-      scheduleNotifInicialXarope();
-      scheduleNotifInicialCapsula();
-      scheduleNotifInicialComprimido();
       scheduleNotifProximaXarope();
       scheduleNotifProximaCapsula();
       scheduleNotifProximaComprimido();

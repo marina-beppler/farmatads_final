@@ -38,7 +38,6 @@ import { IonHeader, IonToolbar, IonContent, IonButton, IonButtons, IonIcon, IonC
 import { arrowBackOutline } from 'ionicons/icons';
 import { useRouter } from 'vue-router';
 import axios from 'axios';
-import router from '@/router';
 
 export default defineComponent({
   name: 'ResetPassword',
@@ -57,7 +56,8 @@ export default defineComponent({
   setup() {
     const router = useRouter();
     return {
-      arrowBackOutline: arrowBackOutline
+      arrowBackOutline,
+      router
     };
   },
   data() {
@@ -71,12 +71,17 @@ export default defineComponent({
   },
   methods: {
     backButton() {
-      router.push('/forgotPassword');
+      this.router.push('/forgotPassword');
     },
     async verifyCode() {
       try {
+        const email = localStorage.getItem('resetEmail'); 
+        if (!email) {
+          this.presentToast('Email não encontrado!');
+          return;
+        }
         const response = await axios.post('http://10.0.2.2:3000/verify-code', {
-          email: this.email,
+          email: email,
           code: this.codigo
         });
         if (response.data.valid) {
@@ -89,17 +94,45 @@ export default defineComponent({
         this.presentToast('Erro ao verificar código!');
       }
     },
+    async savePassword() {
+      if (!this.isCodeValid) {
+        this.presentToast('Verifique o código antes de redefinir a senha.');
+        return;
+      }
+
+      try {
+        const email = localStorage.getItem('resetEmail'); 
+        if (!email) {
+          this.presentToast('Email não encontrado!');
+          return;
+        }
+        if (this.senha !== this.newsenha) {
+          this.presentToast('As senhas não coincidem!');
+          return;
+        }
+
+        const response = await axios.post('http://10.0.2.2:3000/reset-password', {
+          email: email,
+          password: this.newsenha
+        });
+
+        if (response.status === 200) {
+          this.presentToast('Senha redefinida com sucesso!');
+          this.router.push('/');
+        } else {
+          this.presentToast('Erro ao redefinir a senha!');
+        }
+      } catch (error) {
+        console.error(error);
+        this.presentToast('Erro ao redefinir a senha!');
+      }
+    },
     async presentToast(message: string) {
       const toast = await toastController.create({
         message: message,
         duration: 1500
       });
       toast.present();
-    },
-    savePassword() {
-      // método de salvar nova senha
-      console.log('Nova senha salva');
-      router.push('/');
     }
   }
 });

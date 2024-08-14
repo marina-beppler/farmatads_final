@@ -172,7 +172,7 @@ export default defineComponent({
             </div>
           </ion-item>
           <br>
-          <ion-img id="xarope" :src="`src/assets/xarope-${selectedColor}.png`"/>
+          <ion-img id="xarope" :src="`assets/xarope-${selectedColor}.png`"/>
           <br>
           <ion-card id="center">
             <ion-button @click="goToNextPage">

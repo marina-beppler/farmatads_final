@@ -78,6 +78,7 @@ export default defineComponent({
         const response = await axios.post('http://10.0.2.2:3000/send-code', {
           email: this.email,
         });
+        localStorage.setItem('resetEmail', this.email);
         this.presentToast('Email enviado!');
         this.$router.push('/resetPassword');
       } catch (error) {

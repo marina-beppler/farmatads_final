@@ -169,7 +169,7 @@ export default defineComponent({
                     </div>
                 </ion-item>
                 <br>
-                <ion-img id="capsula" :src="`src/assets/capsula-${selectedColor}.png`"/>
+                <ion-img id="capsula" :src="`assets/capsula-${selectedColor}.png`"/>
                 <br>
                 <ion-card id="center">
                     <ion-button @click="goToNextPage">

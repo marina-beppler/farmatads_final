@@ -91,8 +91,8 @@ DB_HOST=localhost
 DB_PORT=5432
 DB_DATABASE=farmatads
 JWT_SECRET=sua_chave_secreta
-EMAIL_USER='farmatads2024@gmail.com'
-EMAIL_PASS='qbml yxuq htuk guol'
+EMAIL_USER='seuemail@gmail.com'
+EMAIL_PASS='sua_senha'
 ```
 ### 4. Instalar Dependências
 

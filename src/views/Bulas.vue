@@ -1,117 +1,106 @@
 <script lang="ts">
 import { defineComponent, ref } from 'vue';
 import axios from 'axios';
-import { IonHeader, IonToolbar, IonButton, IonButtons, IonIcon, IonInput, IonItem, IonCard, IonPage, IonContent, toastController, IonLabel, IonList, IonNote } from '@ionic/vue';
-import { useRouter } from 'vue-router';
+import {
+  IonHeader, IonToolbar, IonButton, IonButtons, IonIcon, IonInput, IonItem,
+  IonCard, IonPage, IonContent, toastController, IonLabel, IonList, IonNote
+} from '@ionic/vue';
 import { searchOutline } from 'ionicons/icons';
 import NavigationMenu from '../views/components/NavigationMenu.vue';
-import { Filesystem, Directory, Encoding } from '@capacitor/filesystem';
-
+import { Filesystem, Directory } from '@capacitor/filesystem';
 
 interface Medicamento {
-    idProduto: number;
-    nomeProduto: string;
-    idBulaPacienteProtegido: string;
-    idBulaProfissionalProtegido: string;
+  idProduto: number;
+  nomeProduto: string;
+  idBulaPacienteProtegido: string;
+  idBulaProfissionalProtegido: string;
 }
 
 export default defineComponent({
-    name: "Bulas",
-    components: {
-        IonHeader,
-        IonToolbar,
-        IonButton,
-        IonIcon,
-        IonButtons,
-        IonInput,
-        IonItem,
-        IonCard,
-        IonPage,
-        IonContent,
-        NavigationMenu,
-        IonLabel,
-        IonList,
-        IonNote
-    },
-    setup() {
-        const medicamento = ref('');
-        const pagina = ref(1);
-        const searchOutlineIcon = searchOutline;
-        const searchResults = ref<Medicamento[]>([]);
+  name: "Bulas",
+  components: {
+    IonHeader, 
+    IonToolbar, 
+    IonButton, 
+    IonIcon, 
+    IonButtons, 
+    IonInput,
+    IonItem, 
+    IonCard, 
+    IonPage, 
+    IonContent, 
+    NavigationMenu, 
+    IonLabel, 
+    IonList, 
+    IonNote
+  },
+  setup() {
+    const medicamento = ref('');
+    const searchResults = ref<Medicamento[]>([]);
+    const searchOutlineIcon = searchOutline;
 
-        const presentToast = async (message: string) => {
-            const toast = await toastController.create({
-                message: message,
-                duration: 1500
-            });
-            toast.present();
+    const presentToast = async (message: string) => {
+      const toast = await toastController.create({
+        message,
+        duration: 1500
+      });
+      toast.present();
+    };
+
+    const searchMedicamento = async () => {
+      if (!medicamento.value) {
+        presentToast('Por favor, digite o nome do medicamento.');
+        return;
+      }
+      try {
+        const response = await axios.get('/bula', { 
+            params: { 
+                medicamento: medicamento.value 
+            } 
+        });
+        searchResults.value = response.data.slice(0, 3);
+      } catch (error) {
+        console.error('Erro ao buscar dados:', error);
+        presentToast('Erro pesquisando medicamento!');
+      }
+    };
+
+    const fetchBulaPDF = async (id: string) => {
+      try {
+        presentToast('Baixando bula, aguarde...');
+        const response = await axios.get(`/bula/${id}`);
+        const bulaPacienteURL = response.data; 
+
+        const pdfResponse = await axios.get(bulaPacienteURL, { responseType: 'blob' });
+        const blob = pdfResponse.data;
+
+        const reader = new FileReader();
+        reader.onloadend = async () => {
+          const base64String = (reader.result as string).split(',')[1];
+          await Filesystem.writeFile({
+            path: 'bula.pdf',
+            data: base64String,
+            directory: Directory.Documents
+          });
+          presentToast('Bula salva com sucesso!');
         };
+        reader.onerror = () => presentToast('Erro ao processar o PDF da bula.');
+        reader.readAsDataURL(blob);
 
-        const searchMedicamento = async () => {
-            if (!medicamento.value) {
-                presentToast('Por favor, digite o nome do medicamento.');
-                return;
-            }
-            try {
-                const response = await axios.get('https://bula.vercel.app/pesquisar', {
-                    params: {
-                        nome: medicamento.value,
-                        pagina: pagina.value
-                    }
-                });
-                searchResults.value = response.data.content.slice(0, 3); 
-            } catch (error) {
-                console.error('Error fetching data:', error);
-                presentToast('Erro pesquisando medicamento!');
-            }
-        };
+      } catch (error) {
+        console.error('Erro ao obter a bula do medicamento:', error);
+        presentToast('Erro ao obter a bula do medicamento!');
+      }
+    };
 
-        const blobToBase64 = (blob: Blob): Promise<string> => {
-            return new Promise((resolve, reject) => {
-                const reader = new FileReader();
-                reader.onloadend = () => {
-                    const base64String = (reader.result as string).split(',')[1];
-                    resolve(base64String);
-                };
-                reader.onerror = reject;
-                reader.readAsDataURL(blob);
-            });
-        };
-
-        const fetchBulaPDF = async (id: string) => {
-            try {
-                presentToast('Baixando bula, aguarde...');
-
-                const response = await axios.get('https://bula.vercel.app/pdf', {
-                    params: { id: id },
-                    responseType: 'blob'
-                });
-
-                const base64String = await blobToBase64(response.data);
-
-                await Filesystem.writeFile({
-                    path: 'bula.pdf',
-                    data: base64String,
-                    directory: Directory.Documents
-                });
-
-                presentToast('Bula salva com sucesso!');
-            } catch (error) {
-                console.error('Error fetching PDF:', error);
-                presentToast('Erro ao obter a bula do medicamento!');
-            }
-        };
-
-
-        return {
-            medicamento,
-            pagina,
-            searchOutlineIcon,
-            searchMedicamento,
-            searchResults,
-            fetchBulaPDF
-        };
-    }
+    return {
+      medicamento,
+      searchOutlineIcon,
+      searchMedicamento,
+      searchResults,
+      fetchBulaPDF
+    };
+  }
 });
 </script>
 

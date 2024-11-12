@@ -8,6 +8,7 @@ const nodemailer = require('nodemailer');
 const pool = require('./db');
 const app = express();
 const path = require('path');
+const bulario = require('bulario');
 app.use(cors({
   origin: '*'
 }));
@@ -433,7 +434,39 @@ app.post('/update-remedio', async (req, res) => {
   }
 });
 
+app.get('/bula', async (req, res) => {
+  try {
+    const { medicamento } = req.query;
+    if (!medicamento) {
+      return res.status(400).json({ error: 'Medicamento faltante' });
+    }
+    const result = await bulario.pesquisar(medicamento);
+    if (!result || result.length === 0) {
+      return res.status(404).json({ error: 'Medicamento não encontrado' });
+    }
+    res.json(result);
+  } catch (error) {
+    console.error('Erro buscando medicamento:', error);
+    res.status(500).json({ error: 'Erro no servidor ao buscar medicamento.' });
+  }
+});
+
+app.get('/bula/:id', async (req, res) => {
+  const idBulaPacienteProtegido = req.params.id;
+  try {
+    const bulaPaciente = await bulario.getBulaPaciente(idBulaPacienteProtegido);
+    if (bulaPaciente) {
+      res.json(bulaPaciente);
+    } else {
+      res.status(404).json({ error: 'Bula não encontrada para esse ID' });
+    }
+  } catch (error) {
+    console.error('Erro buscando bula:', error);
+    res.status(500).json({ error: 'Erro no servidor ao buscar a bula.' });
+  }
+});
 
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });
+

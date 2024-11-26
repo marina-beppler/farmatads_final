@@ -1,5 +1,6 @@
 <script lang="ts">
 import { defineComponent, ref } from 'vue';
+import { onBeforeRouteLeave } from 'vue-router';
 import axios from 'axios';
 import {
   IonHeader, IonToolbar, IonButton, IonButtons, IonIcon, IonInput, IonItem,
@@ -33,6 +34,16 @@ export default defineComponent({
     const splData = ref<any | null>(null); 
     const searchOutlineIcon = searchOutline;
 
+    const resetData = () => {
+      medicamento.value = '';
+      searchResults.value = [];
+      splData.value = null;
+    };
+
+    onBeforeRouteLeave(() => {
+      resetData();
+    });
+
     const presentToast = async (message: string) => {
       const toast = await toastController.create({
         message,
@@ -47,11 +58,11 @@ export default defineComponent({
         return;
       }
       try {
-        const response = await axios.get(`https://api.fda.gov/drug/ndc.json?search=brand_name:${medicamento.value}&limit=3`);
+        const response = await axios.get(`https://api.fda.gov/drug/ndc.json?search=brand_name:${medicamento.value}&limit=5`);
         if (response.data.results && response.data.results.length > 0) {
           searchResults.value = response.data.results;
           splSetId.value = response.data.spl_id;
-          presentToast('id ok, ${splSetId}');
+          console.log(splSetId);
         } else {
           searchResults.value = [];
           presentToast('Nenhum medicamento encontrado.');
@@ -64,7 +75,7 @@ export default defineComponent({
 
     const fetchSPLData = async (splSetId: string) => {
       try {
-        const response = await axios.get(`https://api.fda.gov/drug/ndc.json?search=spl_id:${splSetId}`);
+        const response = await axios.get(`https://api.fda.gov/drug/ndc.json?search=openfda.spl_set_id:${splSetId}`);
         if (response.data.results && response.data.results.length > 0) {
           splData.value = response.data.results[0];
         } else {
@@ -106,28 +117,36 @@ export default defineComponent({
             </ion-item>
           </div>
           <p>Clique no campo acima para pesquisar o medicamento desejado. Para pesquisar, clique na lupa!</p>
-          
+
           <div v-if="searchResults.length">
             <ion-list>
-              <ion-item v-for="med in searchResults" :key="med.spl_id" @click="fetchSPLData(med.spl_id)">
+              <ion-item
+                v-for="(med, index) in searchResults"
+                :key="index"
+                @click="fetchSPLData(med.openfda.spl_set_id[0])"
+              >
                 <ion-label>
-                  <h3>{{ med.brand_name }}</h3>
+                  <h1>{{ med.generic_name }}</h1>
+                  <h2>{{ med.brand_name }}</h2>
                 </ion-label>
               </ion-item>
             </ion-list>
           </div>
 
-          <!-- Display SPL Data -->
+          <!-- SPL  -->
           <div v-if="splData">
             <ion-card>
               <ion-card-header>
-                <ion-card-title>{{ splData.brand_name }}</ion-card-title>
+                <ion-card-title>{{ splData.generic_name }}</ion-card-title>
+                <ion-card-subtitle>{{ splData.brand_name }}</ion-card-subtitle>
               </ion-card-header>
               <ion-card-content>
-                <p><strong>Ingrediente ativo</strong> {{ splData.active_ingredient }}</p>
-                <p><strong>Descrição:</strong> {{ splData.product_label }}</p>
-                <p><strong>Indicação:</strong> {{ splData.indication }}</p>
-                <!-- Add more fields based on available SPL data -->
+                <p><strong>Ingrediente ativo:</strong> {{ splData.active_ingredients[0].name }}</p>
+                <p><strong>Força:</strong> {{ splData.active_ingredients[0].strength }}</p>
+                <p><strong>Forma de dosagem:</strong> {{ splData.dosage_form }}</p>
+                <p><strong>Categoria de Marketing:</strong> {{ splData.marketing_category }}</p>
+                <p><strong>Rota de Administração:</strong> {{ splData.route.join(', ') }}</p>
+                <p><strong>Fabricante:</strong> {{ splData.openfda.manufacturer_name[0] }}</p>
               </ion-card-content>
             </ion-card>
           </div>
@@ -184,4 +203,19 @@ ion-item {
 ion-list {
   --background: #E7F7F4 !important;
 }
+
+h1{
+  color: #034F67;
+  font-family: 'Literata';
+  font-size: medium;
+  text-align: center;
+}
+
+h2 {
+  font-family: "Kufam";
+  color: black;
+  font-size: small;
+  text-align: center;
+}
+
 </style>

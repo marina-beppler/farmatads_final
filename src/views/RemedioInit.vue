@@ -127,11 +127,20 @@ export default defineComponent({
     const selectedHoraInicial = ref('');
     const selectedNome = ref('');
     const selectedMedicationId = ref(0);
+    const userId = ref(localStorage.getItem('userId') || '');
     const route = useRoute();
 
     const fetchXaropeData = async () => {
       try {
-        const response = await axios.get('http://10.0.2.2:3000/xarope'); 
+        const userId = localStorage.getItem('userId');
+        if (!userId) {
+          console.error('UserId não encontrado');
+          return;
+        } else{
+          console.log(userId);
+        }
+
+        const response = await axios.get(`http://10.0.2.2:3000/xarope?userId=${parseInt(userId || '0')}`);
         xaropeData.value = response.data;
       } catch (error) {
         console.error("Error fetching xarope data:", error);
@@ -140,7 +149,16 @@ export default defineComponent({
 
     const fetchCapsulaData = async () => {
       try {
-        const response = await axios.get('http://10.0.2.2:3000/capsula'); 
+        const userId = localStorage.getItem('userId');
+        if (!userId) {
+          console.error('UserId não encontrado');
+          return;
+        } else{
+          console.log(userId);
+        }
+
+        const response = await axios.get(`http://10.0.2.2:3000/capsula?userId=${parseInt(userId || '0')}`);
+
         capsulaData.value = response.data;
       } catch (error) {
         console.error("Error fetching capsula data:", error);
@@ -149,7 +167,15 @@ export default defineComponent({
 
     const fetchComprimidoData = async () => {
       try {
-        const response = await axios.get('http://10.0.2.2:3000/comprimido'); 
+        const userId = localStorage.getItem('userId');
+        if (!userId) {
+          console.error('UserId não encontrado');
+          return;
+        } else{
+          console.log(userId);
+        }
+
+        const response = await axios.get(`http://10.0.2.2:3000/comprimido?userId=${parseInt(userId || '0')}`);
         comprimidoData.value = response.data;
       } catch (error) {
         console.error("Error fetching comprimido data:", error);
@@ -300,6 +326,7 @@ const scheduleNotifProximaComprimido = async () => {
       fetchXaropeData();
       fetchCapsulaData();
       fetchComprimidoData();
+      refetchData();
       scheduleNotifProximaXarope();
       scheduleNotifProximaCapsula();
       scheduleNotifProximaComprimido();
@@ -309,6 +336,14 @@ const scheduleNotifProximaComprimido = async () => {
     if (!newVal) {
       refetchData();
     }
+    });
+    
+    watch(userId, (newUserId) => {
+      if (newUserId) {
+        fetchXaropeData();
+        fetchCapsulaData();
+        fetchComprimidoData();
+      }
     });
 
     onMounted(async () => {
@@ -320,6 +355,14 @@ const scheduleNotifProximaComprimido = async () => {
       scheduleNotifProximaXarope();
       scheduleNotifProximaCapsula();
       scheduleNotifProximaComprimido();
+    });
+
+    onMounted(() => {
+      const storedUserId = localStorage.getItem('userId');
+      if (storedUserId && storedUserId !== userId.value) {
+        userId.value = storedUserId;
+      }
+      refetchData();
     });
 
     const xaropeDataWithTimes = computed(() => 

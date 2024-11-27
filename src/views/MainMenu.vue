@@ -1,5 +1,5 @@
 <script lang="ts">
-import { defineComponent } from 'vue';
+import { defineComponent, ref, onMounted } from 'vue';
 import {
   IonButton, IonHeader, IonIcon, IonPage, IonCard, IonContent, IonImg
 } from '@ionic/vue';
@@ -21,19 +21,30 @@ export default defineComponent({
   },
   setup() {
     const router = useRouter();
+    const userId = ref(0);
+
+    onMounted(() => {
+      const storedUserId = localStorage.getItem('userId');
+      userId.value = storedUserId ? Number(storedUserId) : 0;
+      localStorage.setItem('test', 'testValue');
+      console.log(localStorage.getItem('test'));
+    });
 
     const exitApp = () => {
-        localStorage.clear();  
-        router.push('/');
+      localStorage.removeItem('userId');
+      localStorage.clear(); 
+      router.push('/');     
     };
 
     return {
+      userId,
       exitApp,
       powerOutline
     };
   }
 });
 </script>
+
 
 <template>
 <ion-page>

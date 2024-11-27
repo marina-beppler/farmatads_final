@@ -30,6 +30,7 @@ export default defineComponent({
     const dose = ref(0);
     const qtdDoses = ref(0);
     const selectedTime = ref('');
+    const userId = localStorage.getItem('userId'); 
 
     onMounted(() => {
       selectedMedicationType.value = localStorage.getItem('selectedMedicationType') || '';
@@ -61,6 +62,7 @@ export default defineComponent({
 
     const saveFormData = () => {
       localStorage.setItem('xaropeConfig', JSON.stringify({
+        userId, 
         remedio: remedio.value,
         dose: dose.value,
         qtdDoses: qtdDoses.value,
@@ -91,7 +93,6 @@ export default defineComponent({
   }
 });
 </script>
-
 
 <template>
 <ion-page>

@@ -1,139 +1,142 @@
 <script lang="ts">
-import { defineComponent, onMounted, ref } from 'vue';
-import {
-  IonButton, IonButtons, IonHeader, IonIcon, IonPage, IonCard, IonContent, IonInput, IonItem, IonLabel, IonToolbar, IonImg, toastController
-} from '@ionic/vue';
-import { arrowBackOutline, arrowForwardOutline, qrCodeOutline } from 'ionicons/icons';
-import { useRouter } from 'vue-router';
-import axios from 'axios';
+  import { defineComponent, onMounted, ref } from 'vue';
+  import {
+    IonButton, IonButtons, IonHeader, IonIcon, IonPage, IonCard, IonContent, IonInput, IonItem, IonLabel, IonToolbar, IonImg, toastController
+  } from '@ionic/vue';
+  import { arrowBackOutline, arrowForwardOutline } from 'ionicons/icons';
+  import { useRouter } from 'vue-router';
+  import axios from 'axios';
 
-export default defineComponent({
-  name: 'ComprimidoExtraConfig',
-  components: {
-    IonButton,
-    IonButtons,
-    IonIcon,
-    IonPage,
-    IonHeader,
-    IonCard,
-    IonContent,
-    IonInput,
-    IonItem,
-    IonLabel,
-    IonToolbar,
-    IonImg
-  },
-  setup() {
-    const router = useRouter();
+  export default defineComponent({
+    name: 'ComprimidoExtraConfig',
+    components: {
+      IonButton,
+      IonButtons,
+      IonIcon,
+      IonPage,
+      IonHeader,
+      IonCard,
+      IonContent,
+      IonInput,
+      IonItem,
+      IonLabel,
+      IonToolbar,
+      IonImg
+    },
+    setup() {
+      const router = useRouter();
 
-    const remedio = ref('');
-    const qtdComprimido = ref(0);
-    const intervalo = ref(0);
-    const selectedTime = ref('');
-    const selectedColor = ref('vermelho');
+      const remedio = ref('');
+      const qtdComprimido = ref(0);
+      const intervalo = ref(0);
+      const selectedTime = ref('');
+      const selectedColor = ref('vermelho');
+      const userId = ref(0);
 
-    const colors = [
-      { name: 'azul', hex: '#549EC9' },
-      { name: 'vermelho', hex: '#C95554' },
-      { name: 'amarelo', hex: '#FFDD54' },
-      { name: 'verde', hex: '#52C957' },
-      { name: 'roxo', hex: '#B02AAA' }
-    ];
-    
-    onMounted(() => {
-      const comprimidoConfig = JSON.parse(localStorage.getItem('comprimidoConfig') || '{}');
-      remedio.value = comprimidoConfig.remedio || '';
-      selectedTime.value = comprimidoConfig.selectedTime || '';
-      qtdComprimido.value = comprimidoConfig.qtdComprimido || 0;
-      intervalo.value = comprimidoConfig.intervaloTempo || 0; 
-      selectedColor.value = comprimidoConfig.cor || 'vermelho'; 
-    });
-
-    const presentToast = async (message: string) => {
-      const toast = await toastController.create({
-        message: message,
-        duration: 1500
+      const colors = [
+        { name: 'azul', hex: '#549EC9' },
+        { name: 'vermelho', hex: '#C95554' },
+        { name: 'amarelo', hex: '#FFDD54' },
+        { name: 'verde', hex: '#52C957' },
+        { name: 'roxo', hex: '#B02AAA' }
+      ];
+      
+      onMounted(() => {
+        const comprimidoConfig = JSON.parse(localStorage.getItem('comprimidoConfig') || '{}');
+        remedio.value = comprimidoConfig.remedio || '';
+        selectedTime.value = comprimidoConfig.selectedTime || '';
+        qtdComprimido.value = comprimidoConfig.qtdComprimido || 0;
+        intervalo.value = comprimidoConfig.intervaloTempo || 0; 
+        selectedColor.value = comprimidoConfig.cor || 'vermelho';
+        userId.value = comprimidoConfig.userId || 0; 
       });
-      toast.present();
-    };
 
-    const extractTime = (datetime: string): string => {
-      const date = new Date(datetime);
-      const hours = date.getHours().toString().padStart(2, '0');
-      const minutes = date.getMinutes().toString().padStart(2, '0');
-      return `${hours}:${minutes}:00`;
-    };
-
-    const saveComprimido = async () => {
-      const comprimidoConfig = JSON.parse(localStorage.getItem('comprimidoConfig') || '{}');
-      const data = {
-        tipo: 3,
-        nome: remedio.value || comprimidoConfig.remedio,
-        horaInicial: extractTime(selectedTime.value || comprimidoConfig.selectedTime),
-        intervaloTempo: intervalo.value,
-        cor: selectedColor.value,
-        qtdComprimido: comprimidoConfig.qtdComprimido
+      const presentToast = async (message: string) => {
+        const toast = await toastController.create({
+          message: message,
+          duration: 1500
+        });
+        toast.present();
       };
 
-      if (!data.nome || !data.horaInicial) {
-        presentToast('Por favor, preencha todos os campos obrigatórios.');
-        return;
+      const extractTime = (datetime: string): string => {
+        const date = new Date(datetime);
+        const hours = date.getHours().toString().padStart(2, '0');
+        const minutes = date.getMinutes().toString().padStart(2, '0');
+        return `${hours}:${minutes}:00`;
+      };
+
+      const saveComprimido = async () => {
+        const comprimidoConfig = JSON.parse(localStorage.getItem('comprimidoConfig') || '{}');
+        const data = {
+          userId: userId.value,
+          tipo: 3,
+          nome: remedio.value || comprimidoConfig.remedio,
+          horaInicial: extractTime(selectedTime.value || comprimidoConfig.selectedTime),
+          intervaloTempo: intervalo.value,
+          cor: selectedColor.value,
+          qtdComprimido: comprimidoConfig.qtdComprimido
+        };
+
+        if (!data.nome || !data.horaInicial) {
+          presentToast('Por favor, preencha todos os campos obrigatórios.');
+          return;
+        }
+
+        try {
+          await axios.post('http://10.0.2.2:3000/comprimido', data);
+        } catch (error) {
+          console.error('Failed to save comprimido:', error);
+          presentToast('Erro ao salvar medicamento!');
+        }
       }
 
-      try {
-        await axios.post('http://10.0.2.2:3000/comprimido', data);
-      } catch (error) {
-        console.error('Failed to save comprimido:', error);
-        presentToast('Erro ao salvar medicamento!');
-      }
+      const incrementIntervalo = () => {
+        intervalo.value++;
+      };
+
+      const decrementIntervalo = () => {
+        if (intervalo.value > 0) {
+          intervalo.value--;
+        }
+      };
+
+      const backButton = () => {
+        router.push("/comprimidoconfig");
+      };
+
+      const goToNextPage = async () => {
+        try {
+          await saveComprimido();
+          localStorage.removeItem('selectedMedicationType');
+          localStorage.removeItem('comprimidoConfig');
+          router.push("/remedios");
+        } catch (error) {
+          console.error('Failed to save comprimido:', error);
+          presentToast('Erro ao salvar medicamento!');
+        }
+      };
+
+      const selectColor = (color: string) => {
+        selectedColor.value = color;
+      };
+
+      return {
+        arrowBackOutline,
+        arrowForwardOutline,
+        remedio,
+        intervalo,
+        decrementIntervalo,
+        incrementIntervalo,
+        selectedTime,
+        backButton,
+        goToNextPage,
+        selectedColor,
+        colors,
+        selectColor
+      };
     }
-
-    const incrementIntervalo = () => {
-      intervalo.value++;
-    };
-
-    const decrementIntervalo = () => {
-      if (intervalo.value > 0) {
-        intervalo.value--;
-      }
-    };
-
-    const backButton = () => {
-      router.push("/comprimidoconfig");
-    };
-
-    const goToNextPage = async () => {
-      try {
-        await saveComprimido();
-        localStorage.removeItem('selectedMedicationType');
-        localStorage.removeItem('comprimidoConfig');
-        router.push("/remedios");
-      } catch (error) {
-        console.error('Failed to save comprimido:', error);
-        presentToast('Erro ao salvar medicamento!');
-      }
-    };
-
-    const selectColor = (color: string) => {
-      selectedColor.value = color;
-    };
-
-    return {
-      arrowBackOutline,
-      arrowForwardOutline,
-      remedio,
-      intervalo,
-      decrementIntervalo,
-      incrementIntervalo,
-      selectedTime,
-      backButton,
-      goToNextPage,
-      selectedColor,
-      colors,
-      selectColor
-    };
-  }
-});
+  });
 </script>
 
 <template>

@@ -30,6 +30,7 @@ export default defineComponent({
     const remedio = ref('');
     const qtdCapsula = ref(0);
     const selectedTime = ref('');
+    const userId = localStorage.getItem('userId');
 
     onMounted(() => {
       selectedMedicationType.value = localStorage.getItem('selectedMedicationType') || '';
@@ -51,6 +52,7 @@ export default defineComponent({
 
     const saveFormData = () => {
       localStorage.setItem('capsulaConfig', JSON.stringify({
+        userId,
         remedio: remedio.value,
         qtdCapsula: qtdCapsula.value,
         selectedTime: selectedTime.value

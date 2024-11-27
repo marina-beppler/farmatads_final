@@ -26,11 +26,10 @@ export default defineComponent({
     const router = useRouter();
 
     const selectedMedicationType = ref('');
-
     const remedio = ref('');
     const qtdComprimido = ref(0); 
     const selectedTime = ref('');
-
+    const userId = localStorage.getItem('userId'); 
     onMounted(() => {
       selectedMedicationType.value = localStorage.getItem('selectedMedicationType') || '';
     });
@@ -51,6 +50,7 @@ export default defineComponent({
 
     const saveFormData = () => {
       localStorage.setItem('comprimidoConfig', JSON.stringify({
+        userId, 
         remedio: remedio.value,
         qtdComprimido: qtdComprimido.value,
         selectedTime: selectedTime.value
@@ -77,6 +77,7 @@ export default defineComponent({
   }
 });
 </script>
+
 
 <template>
 <ion-page>

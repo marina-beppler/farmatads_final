@@ -65,7 +65,7 @@
       medicationName: {
         type: String,
         default: ''
-      }
+      },
     },
     setup(props, { emit }) {
       const selectedTime = ref(props.horaInicial);

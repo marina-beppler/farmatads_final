@@ -62,7 +62,6 @@
         console.log('Informe um email!');
         return;
       }
-      //logica de login
       console.log('Email enviado!');
       router.push('/resetPassword');
     }

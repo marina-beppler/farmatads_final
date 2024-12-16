@@ -31,7 +31,8 @@
       const selectedTime = ref('');
       const selectedColor = ref('vermelho');
       const qtdCapsula = ref(0);
-      const userId = ref(0);
+      const userId = ref('');
+  
 
       const colors = [
         { name: 'azul', hex: '#549EC9' },
@@ -43,13 +44,15 @@
 
 
       onMounted(() => {
+
+        
         const capsulaConfig = JSON.parse(localStorage.getItem('capsulaConfig') || '{}');
         remedio.value = capsulaConfig.remedio || '';
         selectedTime.value = capsulaConfig.selectedTime || '';
         qtdCapsula.value = capsulaConfig.qtdCapsula || 0;
-        intervalo.value = capsulaConfig.intervaloTempo || 0; 
-        selectedColor.value = capsulaConfig.cor || 'vermelho'; 
-        userId.value = capsulaConfig.userId || 0;
+        intervalo.value = capsulaConfig.intervaloTempo || 0;
+        selectedColor.value = capsulaConfig.cor || 'vermelho';
+        userId.value = capsulaConfig.userId || '';
       });
 
       const presentToast = async (message: string) => {
@@ -82,10 +85,6 @@
       };
 
       const saveCapsula = async () => {
-        if (!userId) {
-          presentToast('User ID is required');
-          return;
-        }
 
         const capsulaConfig = JSON.parse(localStorage.getItem('capsulaConfig') || '{}');
         const data = {
@@ -102,6 +101,7 @@
           presentToast('Por favor, preencha todos os campos obrigatórios.');
           return;
         }
+
 
         try {
           await axios.post('http://10.0.2.2:3000/capsula', data);
@@ -139,7 +139,8 @@
         goToNextPage,
         selectedColor,
         colors,
-        selectColor
+        selectColor,
+        userId
       };
     }
   });

@@ -406,8 +406,8 @@ app.put('/comprimido/:id', async (req, res) => {
 
   try {
     await pool.query(
-      'UPDATE farmatads.comprimido SET nome = $1, horainicial = $2, intervalotempo = $3, cor = $4, qtdcomprimido = $5 WHERE id = $6 AND usuario = $7',
-      [nome, horainicial, intervalotempo, cor, qtdcomprimido, id, userId]
+      'UPDATE farmatads.comprimido SET nome = $1, horainicial = $2, intervalotempo = $3, cor = $4, qtdcomprimido = $5 WHERE id = $6',
+      [nome, horainicial, intervalotempo, cor, qtdcomprimido, id]
     );
     res.status(200).send('Comprimido updated successfully');
   } catch (error) {

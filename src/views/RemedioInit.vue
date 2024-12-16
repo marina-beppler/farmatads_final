@@ -227,7 +227,7 @@ const refetchData = () => {
     fetchXaropeData();
     fetchCapsulaData();
     fetchComprimidoData();
-  };
+};
 
   const scheduleAndroidNotification = async (title: string, body: string, id: number, time: Date) => {
     await LocalNotifications.schedule({
@@ -303,24 +303,30 @@ const scheduleNotifProximaComprimido = async () => {
   const now = new Date();
   const notifications = comprimidoData.value.map(item => {
     const proximoAsTimeString = calculateProximoAs(item.horainicial, item.intervalotempo);
-    let proximoAsDate = timeStringToDate(proximoAsTimeString, new Date());
+    const proximoAsDate = timeStringToDate(proximoAsTimeString, new Date());
 
     if (proximoAsDate < now) {
       proximoAsDate.setDate(proximoAsDate.getDate() + 1);
     }
 
     return {
-      title: item.nome, 
-      body: 'Tome seu medicamento!', 
+      title: item.nome,
+      body: 'Tome seu comprimido!',
       id: item.id + 1,
-      time: proximoAsDate
+      time: proximoAsDate,
     };
   });
 
   for (const notification of notifications) {
-    await scheduleAndroidNotification(notification.title, notification.body, notification.id, notification.time);
+    try {
+      await scheduleAndroidNotification(notification.title, notification.body, notification.id, notification.time);
+      console.log(`Notificação agendada para ${notification.title} em ${notification.time}`);
+    } catch (error) {
+      console.error(`Erro ao agendar notificação para ${notification.title}:`, error);
+    }
   }
 };
+
 
     watch(route, () => {
       fetchXaropeData();

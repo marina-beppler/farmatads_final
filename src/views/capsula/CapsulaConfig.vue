@@ -26,13 +26,14 @@ export default defineComponent({
     const router = useRouter();
 
     const selectedMedicationType = ref('');
-
     const remedio = ref('');
     const qtdCapsula = ref(0);
     const selectedTime = ref('');
-    const userId = localStorage.getItem('userId');
 
     onMounted(() => {
+      remedio.value = '';
+      qtdCapsula.value = 0;
+      selectedTime.value = '';
       selectedMedicationType.value = localStorage.getItem('selectedMedicationType') || '';
     });
 
@@ -51,12 +52,21 @@ export default defineComponent({
     };
 
     const saveFormData = () => {
+      const userId = localStorage.getItem('userId') || '';
+
       localStorage.setItem('capsulaConfig', JSON.stringify({
         userId,
         remedio: remedio.value,
         qtdCapsula: qtdCapsula.value,
         selectedTime: selectedTime.value
       }));
+
+      console.log("Saved data:", {
+        userId,
+        remedio: remedio.value,
+        qtdCapsula: qtdCapsula.value,
+        selectedTime: selectedTime.value
+      });
     };
 
     const goToNextPage = () => {
@@ -79,6 +89,7 @@ export default defineComponent({
   }
 });
 </script>
+
 
 <template>
 <ion-page>

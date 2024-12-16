@@ -1,5 +1,5 @@
 <script lang="ts">
-import { defineComponent } from 'vue';
+import { defineComponent, onMounted, ref } from 'vue';
 import {
   IonButton, IonHeader, IonIcon, IonPage, IonCard, IonContent
 } from '@ionic/vue';
@@ -19,24 +19,25 @@ export default defineComponent({
   },
   setup() {
     const router = useRouter();
+    const userId = ref(localStorage.getItem('userId') || '');
 
-    const userId = localStorage.getItem('userId');
+    onMounted(() => {
+      const userId = localStorage.getItem('userId');
+    });
+
     
     const selectCapsula = () => {
     localStorage.setItem('selectedMedicationType', '2');
-    localStorage.setItem('userId', userId!);
       router.push('/capsulaconfig');
     };
 
     const selectComprimido = () => {
     localStorage.setItem('selectedMedicationType', '3');
-    localStorage.setItem('userId', userId!);
       router.push('/comprimidoconfig');
     };
 
     const selectXarope = () => {
     localStorage.setItem('selectedMedicationType', '1');
-    localStorage.setItem('userId', userId!);
       router.push('/xaropeconfig');
     };
 

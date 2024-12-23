@@ -1,5 +1,5 @@
 <script lang="ts">
-import { defineComponent } from 'vue';
+import { defineComponent, onMounted, ref } from 'vue';
 import {
   IonButton, IonHeader, IonIcon, IonPage, IonCard, IonContent
 } from '@ionic/vue';
@@ -19,6 +19,12 @@ export default defineComponent({
   },
   setup() {
     const router = useRouter();
+    const userId = ref(localStorage.getItem('userId') || '');
+
+    onMounted(() => {
+      const userId = localStorage.getItem('userId');
+    });
+
     
     const selectCapsula = () => {
     localStorage.setItem('selectedMedicationType', '2');

@@ -15,11 +15,11 @@ export default defineComponent({
   },
   setup() {
     const openLogin = () => {
-      router.push('/login'); // Assuming the login route is '/login'
+      router.push('/login'); 
     };
 
     const openCadastro = () => {
-      router.push('/cadastro'); // Assuming the cadastro route is '/cadastro'
+      router.push('/cadastro'); 
     };
 
     return {

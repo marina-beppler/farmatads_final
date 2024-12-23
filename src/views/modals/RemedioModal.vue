@@ -65,7 +65,7 @@
       medicationName: {
         type: String,
         default: ''
-      }
+      },
     },
     setup(props, { emit }) {
       const selectedTime = ref(props.horaInicial);
@@ -88,11 +88,9 @@
   
           await axios.post('http://10.0.2.2:3000/update-remedio', payload);
   
-          // Close the modal after successful save
           closeModal();
         } catch (error) {
           console.error('Error saving medication time:', error);
-          // Handle the error as needed
         }
       };
   

@@ -83,12 +83,14 @@ export default defineComponent({
       email: email.value,
       password: password.value,
     });
-    localStorage.setItem('token', response.data.token);
+    const { token, id } = response.data;
+    localStorage.setItem('token', token);
+    localStorage.setItem('userId', id);
     router.push('/menu');
   } catch (error: unknown) {
     if (axios.isAxiosError(error)) {
       console.error('Login request error:', error.response ? error.response.data : error.message);
-      await presentToast('Erro ao fazer login: ' + (error.response ? error.response.data.message : error.message));
+      await presentToast('Erro ao fazer login!');
     } else {
       console.error('Unexpected error:', error);
       await presentToast('Erro inesperado ao fazer login');

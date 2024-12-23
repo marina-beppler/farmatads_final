@@ -8,7 +8,6 @@ const nodemailer = require('nodemailer');
 const pool = require('./db');
 const app = express();
 const path = require('path');
-const bulario = require('bulario');
 app.use(cors({
   origin: '*'
 }));
@@ -74,7 +73,7 @@ app.post('/login', async (req, res) => {
     }
 
     const token = jwt.sign({ userId: user.rows[0].id }, process.env.JWT_SECRET, { expiresIn: '730h' });
-    res.json({ token });
+    res.json({ token, id: user.rows[0].id });
   } catch (error) {
     console.error(error.message);
     res.status(500).json({ error: 'Server error' });
@@ -145,23 +144,37 @@ app.post('/reset-password', async (req, res) => {
   }
 });
 
+// Buscar todos os xaropes do usuário
 app.get('/xarope', async (req, res) => {
+  const userId = req.query.userId;
+  if (!userId) {
+    return res.status(400).json({ error: 'User ID is required' });
+  }
+
   try {
-    const xaropeData = await pool.query('SELECT id, nome, cor, horainicial, intervalotempo, qtddose FROM farmatads.xarope');
+    const xaropeData = await pool.query(
+      'SELECT id, nome, cor, horainicial, intervalotempo, qtddose FROM farmatads.xarope WHERE usuario = $1',
+      [userId]
+    );
     res.json(xaropeData.rows);
   } catch (error) {
-    console.error('Error fetching xarope data:', error.message);
+    console.error('Error fetching xarope data:', userId);
     res.status(500).json({ error: 'Server error' });
   }
 });
 
+// Buscar um xarope específico pelo ID e pelo userId
 app.get('/xarope/:id', async (req, res) => {
   const { id } = req.params;
-
+  
   try {
-    const xaropeData = await pool.query('SELECT id, nome, cor, horainicial, intervalotempo, dosagem, qtddose FROM farmatads.xarope WHERE id = $1', [id]);
+    const xaropeData = await pool.query(
+      'SELECT id, nome, cor, horainicial, intervalotempo, dosagem, qtddose FROM farmatads.xarope WHERE id = $1',
+      [id]
+    );
     if (xaropeData.rows.length === 0) {
-      return res.status(404).json({ error: 'Xarope não encontrado' });
+      return res.status(404).json({ error: 'Xarope não encontrado', id });
+      
     }
     
     res.json(xaropeData.rows[0]);
@@ -171,17 +184,18 @@ app.get('/xarope/:id', async (req, res) => {
   }
 });
 
+// Criar um novo xarope para um usuário
 app.post('/xarope', async (req, res) => {
-  const { tipo, nome, horaInicial, intervaloTempo, cor, dosagem, qtdDose } = req.body;
+  const { userId, tipo, nome, horaInicial, intervaloTempo, cor, dosagem, qtdDose } = req.body;
 
-  if (!tipo || !nome || !horaInicial || !intervaloTempo || !cor || !dosagem || !qtdDose) {
+  if (!userId || !tipo || !nome || !horaInicial || !intervaloTempo || !cor || !dosagem || !qtdDose) {
     return res.status(400).json({ error: 'Todos os campos são obrigatórios!' });
   }
 
   try {
     const newXarope = await pool.query(
-      'INSERT INTO farmatads.xarope (tipo, nome, horaInicial, intervaloTempo, cor, dosagem, qtdDose) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *',
-      [tipo, nome, horaInicial, intervaloTempo, cor, dosagem, qtdDose]
+      'INSERT INTO farmatads.xarope (usuario, tipo, nome, horaInicial, intervaloTempo, cor, dosagem, qtdDose) VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING *',
+      [userId, tipo, nome, horaInicial, intervaloTempo, cor, dosagem, qtdDose]
     );
     res.json(newXarope.rows[0]);
   } catch (error) {
@@ -190,6 +204,7 @@ app.post('/xarope', async (req, res) => {
   }
 });
 
+// Atualizar um xarope do usuário
 app.put('/xarope/:id', async (req, res) => {
   const { id } = req.params;
   const { nome, qtddose, dosagem, horainicial, intervalotempo, cor } = req.body;
@@ -206,11 +221,15 @@ app.put('/xarope/:id', async (req, res) => {
   }
 });
 
+// Deletar um xarope
 app.delete('/xarope/:id', async (req, res) => {
   const { id } = req.params;
 
   try {
-    const deleteXarope = await pool.query('DELETE FROM farmatads.xarope WHERE id = $1 RETURNING *', [id]);
+    const deleteXarope = await pool.query(
+      'DELETE FROM farmatads.xarope WHERE id = $1 RETURNING *',
+      [id]
+    );
 
     if (deleteXarope.rows.length === 0) {
       return res.status(404).json({ error: 'Xarope não encontrado' });
@@ -223,9 +242,18 @@ app.delete('/xarope/:id', async (req, res) => {
   }
 });
 
+// Buscar todas as cápsulas do usuário
 app.get('/capsula', async (req, res) => {
+  const userId = req.query.userId;
+  if (!userId) {
+    return res.status(400).json({ error: 'User ID is required' });
+  }
+
   try {
-    const capsulaData = await pool.query('SELECT id, nome, cor, horainicial, intervalotempo, qtdcapsula FROM farmatads.capsula');
+    const capsulaData = await pool.query(
+      'SELECT id, nome, cor, horainicial, intervalotempo, qtdcapsula FROM farmatads.capsula WHERE usuario = $1',
+      [userId]
+    );
     res.json(capsulaData.rows);
   } catch (error) {
     console.error('Error fetching capsula data:', error.message);
@@ -233,44 +261,47 @@ app.get('/capsula', async (req, res) => {
   }
 });
 
+// Buscar uma cápsula específica pelo ID 
 app.get('/capsula/:id', async (req, res) => {
   const { id } = req.params;
+
   try {
     const capsulaData = await pool.query(
       'SELECT id, nome, cor, horainicial, intervalotempo, qtdcapsula FROM farmatads.capsula WHERE id = $1',
       [id]
     );
-    if (capsulaData.rows.length > 0) {
-      res.json(capsulaData.rows[0]);
-    } else {
-      res.status(404).json({ error: 'Comprimido not found' });
+    if (capsulaData.rows.length === 0) {
+      return res.status(404).json({ error: 'Capsula not found' });
     }
+    
+    res.json(capsulaData.rows[0]);
   } catch (error) {
-    console.error('Error fetching capsula data:', error.message);
+    console.error('Error fetching capsula by ID:', error.message);
     res.status(500).json({ error: 'Server error' });
   }
 });
 
-
+// Criar uma nova cápsula para o usuário
 app.post('/capsula', async (req, res) => {
-  const { tipo, nome, horaInicial, intervaloTempo, cor, qtdCapsula } = req.body;
+  const { userId, tipo, nome, horaInicial, intervaloTempo, cor, qtdCapsula } = req.body;
 
-  if (!tipo || !nome || !horaInicial || !intervaloTempo || !cor || !qtdCapsula) {
+  if (!userId || !tipo || !nome || !horaInicial || !intervaloTempo || !cor || !qtdCapsula) {
     return res.status(400).json({ error: 'Todos os campos são obrigatórios!' });
   }
 
   try {
     const newCapsula = await pool.query(
-      'INSERT INTO farmatads.capsula (tipo, nome, horaInicial, intervaloTempo, cor, qtdCapsula) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *',
-      [tipo, nome, horaInicial, intervaloTempo, cor, qtdCapsula]
+      'INSERT INTO farmatads.capsula (usuario, tipo, nome, horaInicial, intervaloTempo, cor, qtdCapsula) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *',
+      [userId, tipo, nome, horaInicial, intervaloTempo, cor, qtdCapsula]
     );
     res.json(newCapsula.rows[0]);
   } catch (error) {
-    console.error(error.message);
+    console.error('Error inserting capsula:', error.message);
     res.status(500).json({ error: 'Server error' });
   }
 });
 
+// Atualizar uma cápsula do usuário
 app.put('/capsula/:id', async (req, res) => {
   const { id } = req.params;
   const { nome, qtdcapsula, horainicial, intervalotempo, cor } = req.body;
@@ -287,11 +318,15 @@ app.put('/capsula/:id', async (req, res) => {
   }
 });
 
+// Deletar uma cápsula
 app.delete('/capsula/:id', async (req, res) => {
   const { id } = req.params;
 
   try {
-    const deleteCapsula = await pool.query('DELETE FROM farmatads.capsula WHERE id = $1 RETURNING *', [id]);
+    const deleteCapsula = await pool.query(
+      'DELETE FROM farmatads.capsula WHERE id = $1 RETURNING *',
+      [id]
+    );
 
     if (deleteCapsula.rows.length === 0) {
       return res.status(404).json({ error: 'Cápsula não encontrada' });
@@ -304,9 +339,19 @@ app.delete('/capsula/:id', async (req, res) => {
   }
 });
 
+
+// Buscar todos os comprimidos do usuário
 app.get('/comprimido', async (req, res) => {
+  const userId = req.query.userId;
+  if (!userId) {
+    return res.status(400).json({ error: 'User ID is required' });
+  }
+
   try {
-    const comprimidoData = await pool.query('SELECT id, nome, cor, horainicial, intervalotempo, qtdcomprimido FROM farmatads.comprimido');
+    const comprimidoData = await pool.query(
+      'SELECT id, nome, cor, horainicial, intervalotempo, qtdcomprimido FROM farmatads.comprimido WHERE usuario = $1',
+      [userId]
+    );
     res.json(comprimidoData.rows);
   } catch (error) {
     console.error('Error fetching comprimido data:', error.message);
@@ -314,43 +359,47 @@ app.get('/comprimido', async (req, res) => {
   }
 });
 
+// Buscar um comprimido específico pelo ID
 app.get('/comprimido/:id', async (req, res) => {
   const { id } = req.params;
+
   try {
     const comprimidoData = await pool.query(
       'SELECT id, nome, cor, horainicial, intervalotempo, qtdcomprimido FROM farmatads.comprimido WHERE id = $1',
       [id]
     );
-    if (comprimidoData.rows.length > 0) {
-      res.json(comprimidoData.rows[0]);
-    } else {
-      res.status(404).json({ error: 'Comprimido not found' });
+    if (comprimidoData.rows.length === 0) {
+      return res.status(404).json({ error: 'Comprimido not found' });
     }
+    
+    res.json(comprimidoData.rows[0]);
   } catch (error) {
-    console.error('Error fetching comprimido data:', error.message);
+    console.error('Error fetching comprimido by ID:', error.message);
     res.status(500).json({ error: 'Server error' });
   }
 });
 
+// Criar um novo comprimido para o usuário
 app.post('/comprimido', async (req, res) => {
-  const { tipo, nome, horaInicial, intervaloTempo, cor, qtdComprimido } = req.body;
+  const { userId, tipo, nome, horaInicial, intervaloTempo, cor, qtdComprimido } = req.body;
 
-  if (!tipo || !nome || !horaInicial || !intervaloTempo || !cor || !qtdComprimido) {
+  if (!userId || !tipo || !nome || !horaInicial || !intervaloTempo || !cor || !qtdComprimido) {
     return res.status(400).json({ error: 'Todos os campos são obrigatórios!' });
   }
 
   try {
     const newComprimido = await pool.query(
-      'INSERT INTO farmatads.comprimido (tipo, nome, horaInicial, intervaloTempo, cor, qtdComprimido) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *',
-      [tipo, nome, horaInicial, intervaloTempo, cor, qtdComprimido]
+      'INSERT INTO farmatads.comprimido (usuario, tipo, nome, horaInicial, intervaloTempo, cor, qtdComprimido) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *',
+      [userId, tipo, nome, horaInicial, intervaloTempo, cor, qtdComprimido]
     );
     res.json(newComprimido.rows[0]);
   } catch (error) {
-    console.error(error.message);
+    console.error('Error inserting comprimido:', error.message);
     res.status(500).json({ error: 'Server error' });
   }
 });
 
+// Atualizar um comprimido do usuário
 app.put('/comprimido/:id', async (req, res) => {
   const { id } = req.params;
   const { nome, horainicial, intervalotempo, cor, qtdcomprimido } = req.body;
@@ -367,11 +416,15 @@ app.put('/comprimido/:id', async (req, res) => {
   }
 });
 
+// Deletar um comprimido do usuário
 app.delete('/comprimido/:id', async (req, res) => {
   const { id } = req.params;
-
+  
   try {
-    const deleteComprimido = await pool.query('DELETE FROM farmatads.comprimido WHERE id = $1 RETURNING *', [id]);
+    const deleteComprimido = await pool.query(
+      'DELETE FROM farmatads.comprimido WHERE id = $1 RETURNING *',
+      [id]
+    );
 
     if (deleteComprimido.rows.length === 0) {
       return res.status(404).json({ error: 'Comprimido não encontrado' });
@@ -383,6 +436,7 @@ app.delete('/comprimido/:id', async (req, res) => {
     res.status(500).json({ error: 'Server error' });
   }
 });
+
 
 app.post('/update-remedio', async (req, res) => {
   const { id, time, type } = req.body;
@@ -434,39 +488,7 @@ app.post('/update-remedio', async (req, res) => {
   }
 });
 
-app.get('/bula', async (req, res) => {
-  try {
-    const { medicamento } = req.query;
-    if (!medicamento) {
-      return res.status(400).json({ error: 'Medicamento faltante' });
-    }
-    const result = await bulario.pesquisar(medicamento);
-    if (!result || result.length === 0) {
-      return res.status(404).json({ error: 'Medicamento não encontrado' });
-    }
-    res.json(result);
-  } catch (error) {
-    console.error('Erro buscando medicamento:', error);
-    res.status(500).json({ error: 'Erro no servidor ao buscar medicamento.' });
-  }
-});
-
-app.get('/bula/:id', async (req, res) => {
-  const idBulaPacienteProtegido = req.params.id;
-  try {
-    const bulaPaciente = await bulario.getBulaPaciente(idBulaPacienteProtegido);
-    if (bulaPaciente) {
-      res.json(bulaPaciente);
-    } else {
-      res.status(404).json({ error: 'Bula não encontrada para esse ID' });
-    }
-  } catch (error) {
-    console.error('Erro buscando bula:', error);
-    res.status(500).json({ error: 'Erro no servidor ao buscar a bula.' });
-  }
-});
 
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });
-

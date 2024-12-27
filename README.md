@@ -103,33 +103,29 @@ npm install
 ```
 ### 5. Rodar a Aplicação
 
-É possível rodar o projeto por meio do arquivo *start.sh*, que irá iniciar tanto o front quanto o back ao mesmo tempo. Você pode fazer isso por meio do terminal com:
+#### Android Studio
 
-```bash
-./start.sh
-```
-Caso prefira, o front e o back do projeto podem ser iniciados separadamente:
+O projeto foi feito para ser funcionar em um dispositivo mobile, de modo que roda especificamente por meio do emulador do **Android Studio**. Para rodar o app (build and run), siga o tutorial a seguir: [Tutorial Build and Run (Oficial Android Studio)](https://developer.android.com/studio/run). Caso precise configurar o emulador, siga o seguinte tutorial: [Tutorial Emulador (Oficial Android Studio)](https://developer.android.com/studio/run/emulator?hl=pt-br).
 
-#### backend
-No diretório *backend*:
+#### Backend em node.js
+
+O *backend* do aplicativo roda separadamente e deve ser ativado antes da aplicação no Android Studio, caso contrário ela não irá funcionar corretamente. Para fazer isso, no diretório *backend*:
 
 ```bash
 node index.js
 ```
 
-#### frontend
-No diretório geral da aplicação (farmatads):
+##### Alteração para localhost
 
-```bash
-npm run serve
+Caso queira testar a aplicação em um navegador, altere todas as chamadas ao *backend*, mudando a parte inicial da URL de **http://10.0.2.2:3000** (necessário para acessar o *localhost* enquanto utilizando o emulador do Android Studio) para **http://localhost:5173**. Dessa forma é possível rodar o projeto por meio do arquivo start.sh, que irá iniciar tanto o front quanto o back ao mesmo tempo. Você pode fazer isso por meio do terminal com:
+
 ```
-### 6. Acessar a Aplicação
-A aplicação estará disponível no endereço http://localhost:5173.
+./start.sh
+```
 
 ## Tecnologias Utilizadas
 * Frontend: Vue.js, Ionic Vue;
 * Backend: Node.js, Express;
 * Banco de Dados: PostgreSQL;
 * Autenticação: JWT (JSON Web Token).
-
 
